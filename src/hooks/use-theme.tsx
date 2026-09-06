@@ -1,0 +1,45 @@
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+
+type Theme = "light" | "dark";
+type Ctx = { theme: Theme; toggle: () => void; setTheme: (t: Theme) => void };
+
+const ThemeCtx = createContext<Ctx | null>(null);
+const STORAGE_KEY = "rk-theme";
+
+function applyTheme(t: Theme) {
+  if (typeof document === "undefined") return;
+  const root = document.documentElement;
+  root.classList.remove("light", "dark");
+  root.classList.add(t);
+  root.style.colorScheme = t;
+}
+
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [theme, setThemeState] = useState<Theme>("dark");
+
+  useEffect(() => {
+    const stored = (typeof window !== "undefined" && localStorage.getItem(STORAGE_KEY)) as Theme | null;
+    const prefersLight = typeof window !== "undefined" && window.matchMedia?.("(prefers-color-scheme: light)").matches;
+    const initial: Theme = stored ?? (prefersLight ? "light" : "dark");
+    setThemeState(initial);
+    applyTheme(initial);
+  }, []);
+
+  const setTheme = (t: Theme) => {
+    setThemeState(t);
+    applyTheme(t);
+    try { localStorage.setItem(STORAGE_KEY, t); } catch {}
+  };
+
+  return (
+    <ThemeCtx.Provider value={{ theme, toggle: () => setTheme(theme === "dark" ? "light" : "dark"), setTheme }}>
+      {children}
+    </ThemeCtx.Provider>
+  );
+}
+
+export function useTheme() {
+  const ctx = useContext(ThemeCtx);
+  if (!ctx) return { theme: "dark" as Theme, toggle: () => {}, setTheme: () => {} };
+  return ctx;
+}
