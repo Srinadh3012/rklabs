@@ -1,25 +1,28 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { collection, doc, getDoc, getDocs, query, where, orderBy } from "firebase/firestore";
+import { db } from "./firebase";
 
 const schema = z.object({ ticket: z.string().trim().min(1).max(64) });
-
-import { Repair, Customer, RepairNote } from "./models";
 
 export const trackRepair = createServerFn({ method: "GET" })
   .validator((data: unknown) => schema.parse(data))
   .handler(async ({ data }) => {
     const ticket = data.ticket.toUpperCase();
     
-    const repair = await Repair.findOne({ ticket_no: ticket }).select(
-      "id ticket_no status device_type device_brand device_model imei issue technician_name estimated_cost final_cost estimated_completion appointment_at created_at assigned_at completed_at delivered_at customer_id"
-    );
+    const q = query(collection(db, "repairs"), where("ticket_no", "==", ticket));
+    const snap = await getDocs(q);
     
-    if (!repair) return { found: false as const };
+    if (snap.empty) return { found: false as const };
+
+    const repairDoc = snap.docs[0];
+    const repair = { id: repairDoc.id, ...repairDoc.data() };
 
     let customer = null;
-    if (repair.customer_id) {
-      const c = await Customer.findById(repair.customer_id).select("name phone whatsapp email address");
-      if (c) {
+    if ((repair as any).customer_id) {
+      const custSnap = await getDoc(doc(db, "customers", (repair as any).customer_id));
+      if (custSnap.exists()) {
+        const c = custSnap.data();
         customer = {
           name: c.name,
           phone: c.phone,
@@ -30,14 +33,14 @@ export const trackRepair = createServerFn({ method: "GET" })
       }
     }
 
-    const notes = await RepairNote.find({ repair_id: repair._id.toString() })
-      .select("id note task_done technician_name created_at completed_at")
-      .sort({ created_at: 1 });
+    const notesQ = query(collection(db, "repair_notes"), where("repair_id", "==", repairDoc.id), orderBy("created_at", "asc"));
+    const notesSnap = await getDocs(notesQ);
+    const notes = notesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
     return { 
       found: true as const, 
-      repair: { ...repair.toObject(), id: repair._id.toString() }, 
+      repair, 
       customer, 
-      notes: notes.map(n => ({ ...n.toObject(), id: n._id.toString() })) 
+      notes,
     };
   });

@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { InventoryItem, StockMovement, Supplier, PurchaseOrder, PurchaseOrderItem } from "../models";
+import { collection, doc, addDoc, getDoc, getDocs, updateDoc, deleteDoc, query, orderBy, where, increment } from "firebase/firestore";
+import { db } from "../firebase";
 import { requireAuth } from "../auth.server";
 
 // === INVENTORY ITEMS ===
@@ -18,33 +19,29 @@ const inventoryItemSchema = z.object({
 export const getInventoryItemsFn = createServerFn({ method: "GET" })
   .handler(async () => {
     await requireAuth();
-    const items = await InventoryItem.find().sort({ name: 1 });
-    return items.map(i => ({
-      id: i._id.toString(),
-      name: i.name,
-      sku: i.sku,
-      category: i.category,
-      cost_price: i.cost_price,
-      selling_price: i.selling_price,
-      stock_level: i.stock_level,
-      min_stock_level: i.min_stock_level,
-      location: i.location,
-    }));
+    const q = query(collection(db, "inventory"), orderBy("name", "asc"));
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
   });
 
 export const createInventoryItemFn = createServerFn({ method: "POST" })
   .validator((data) => inventoryItemSchema.parse(data))
   .handler(async ({ data }) => {
     const { session } = await requireAuth();
-    const item = await InventoryItem.create({ ...data, owner_id: session.userId });
-    return { id: item._id.toString() };
+    const docRef = await addDoc(collection(db, "inventory"), {
+      ...data,
+      quantity: data.stock_level,
+      owner_id: session.userId,
+      created_at: new Date().toISOString(),
+    });
+    return { id: docRef.id };
   });
 
 export const updateInventoryItemFn = createServerFn({ method: "POST" })
   .validator((data) => z.object({ id: z.string(), data: inventoryItemSchema.partial() }).parse(data))
   .handler(async ({ data }) => {
     await requireAuth();
-    await InventoryItem.findByIdAndUpdate(data.id, data.data);
+    await updateDoc(doc(db, "inventory", data.id), data.data);
     return { success: true };
   });
 
@@ -52,7 +49,7 @@ export const deleteInventoryItemFn = createServerFn({ method: "POST" })
   .validator((id: string) => z.string().parse(id))
   .handler(async ({ data }) => {
     await requireAuth();
-    await InventoryItem.findByIdAndDelete(data);
+    await deleteDoc(doc(db, "inventory", data));
     return { success: true };
   });
 
@@ -69,28 +66,40 @@ const stockMovementSchema = z.object({
 export const getStockMovementsFn = createServerFn({ method: "GET" })
   .handler(async () => {
     await requireAuth();
-    const moves = await StockMovement.find().sort({ created_at: -1 }).limit(500);
-    return moves.map(m => ({
-      id: m._id.toString(),
-      item_id: m.item_id,
-      item_name: "Item", // Would need a lookup, but keeping simple for now or fetch in UI
-      movement_type: m.type,
-      change: m.quantity,
-      balance_after: 0, // Need calculation in UI
-      reference: m.reference_id,
-      notes: m.notes,
-      created_at: m.created_at.toISOString(),
-    }));
+    const q = query(collection(db, "stock_movements"), orderBy("created_at", "desc"));
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => {
+      const m = d.data();
+      return {
+        id: d.id,
+        item_id: m.item_id,
+        item_name: "Item",
+        movement_type: m.type,
+        change: m.quantity,
+        balance_after: 0,
+        reference: m.reference_id,
+        notes: m.notes,
+        created_at: m.created_at,
+      };
+    });
   });
 
 export const createStockMovementFn = createServerFn({ method: "POST" })
   .validator((data) => stockMovementSchema.parse(data))
   .handler(async ({ data }) => {
     const { session } = await requireAuth();
-    await StockMovement.create({ ...data, owner_id: session.userId });
+    await addDoc(collection(db, "stock_movements"), {
+      ...data,
+      owner_id: session.userId,
+      created_at: new Date().toISOString(),
+    });
+    // Update inventory quantity
     if (data.type === "in" || data.type === "out") {
       const modifier = data.type === "in" ? data.quantity : -data.quantity;
-      await InventoryItem.findByIdAndUpdate(data.item_id, { $inc: { quantity: modifier } });
+      await updateDoc(doc(db, "inventory", data.item_id), {
+        quantity: increment(modifier),
+        stock_level: increment(modifier),
+      });
     }
     return { success: true };
   });
@@ -109,32 +118,28 @@ const supplierSchema = z.object({
 export const getSuppliersFn = createServerFn({ method: "GET" })
   .handler(async () => {
     await requireAuth();
-    const items = await Supplier.find().sort({ name: 1 });
-    return items.map(i => ({
-      id: i._id.toString(),
-      name: i.name,
-      contact_person: i.contact_person,
-      phone: i.phone,
-      email: i.email,
-      address: i.address,
-      gst_number: i.gst_number,
-      notes: i.notes,
-    }));
+    const q = query(collection(db, "suppliers"), orderBy("name", "asc"));
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
   });
 
 export const createSupplierFn = createServerFn({ method: "POST" })
   .validator((data) => supplierSchema.parse(data))
   .handler(async ({ data }) => {
     const { session } = await requireAuth();
-    const item = await Supplier.create({ ...data, owner_id: session.userId });
-    return { id: item._id.toString() };
+    const docRef = await addDoc(collection(db, "suppliers"), {
+      ...data,
+      owner_id: session.userId,
+      created_at: new Date().toISOString(),
+    });
+    return { id: docRef.id };
   });
 
 export const updateSupplierFn = createServerFn({ method: "POST" })
   .validator((data) => z.object({ id: z.string(), data: supplierSchema.partial() }).parse(data))
   .handler(async ({ data }) => {
     await requireAuth();
-    await Supplier.findByIdAndUpdate(data.id, data.data);
+    await updateDoc(doc(db, "suppliers", data.id), data.data);
     return { success: true };
   });
 
@@ -142,7 +147,7 @@ export const deleteSupplierFn = createServerFn({ method: "POST" })
   .validator((id: string) => z.string().parse(id))
   .handler(async ({ data }) => {
     await requireAuth();
-    await Supplier.findByIdAndDelete(data);
+    await deleteDoc(doc(db, "suppliers", data));
     return { success: true };
   });
 
@@ -150,31 +155,30 @@ export const deleteSupplierFn = createServerFn({ method: "POST" })
 export const getPurchaseOrdersFn = createServerFn({ method: "GET" })
   .handler(async () => {
     await requireAuth();
-    const items = await PurchaseOrder.find().sort({ created_at: -1 });
-    return items.map(i => ({
-      id: i._id.toString(),
-      po_no: i.po_number,
-      supplier_id: i.supplier_id,
-      status: i.status,
-      total: i.total_amount,
-      created_at: i.created_at.toISOString(),
-      received_at: i.received_at?.toISOString(),
-      notes: i.notes,
-    }));
+    const q = query(collection(db, "purchase_orders"), orderBy("created_at", "desc"));
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => {
+      const i = d.data();
+      return {
+        id: d.id,
+        po_no: i.po_number,
+        supplier_id: i.supplier_id,
+        status: i.status,
+        total: i.total_amount,
+        created_at: i.created_at,
+        received_at: i.received_at,
+        notes: i.notes,
+      };
+    });
   });
 
 export const getPurchaseOrderItemsFn = createServerFn({ method: "GET" })
   .validator((data) => z.object({ po_id: z.string() }).parse(data))
   .handler(async ({ data }) => {
     await requireAuth();
-    const items = await PurchaseOrderItem.find({ po_id: data.po_id });
-    return items.map(i => ({
-      id: i._id.toString(),
-      po_id: i.po_id,
-      item_id: i.item_id,
-      quantity: i.quantity,
-      unit_cost: i.unit_cost,
-    }));
+    const q = query(collection(db, "purchase_order_items"), where("po_id", "==", data.po_id));
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
   });
 
 export const createPurchaseOrderFn = createServerFn({ method: "POST" })
@@ -182,32 +186,35 @@ export const createPurchaseOrderFn = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { session } = await requireAuth();
     const poNumber = `PO-${Date.now().toString().slice(-6)}`;
-    const po = await PurchaseOrder.create({ 
+    const docRef = await addDoc(collection(db, "purchase_orders"), { 
       po_number: poNumber,
       supplier_id: data.supplier_id,
       total_amount: data.total,
       notes: data.notes,
-      owner_id: session.userId 
+      status: "pending",
+      owner_id: session.userId,
+      created_at: new Date().toISOString(),
     });
     
     if (data.lines && data.lines.length > 0) {
-      const lineItems = data.lines.map((l: any) => ({
-        po_id: po._id.toString(),
-        item_id: l.item_id,
-        quantity: l.quantity,
-        unit_cost: l.unit_cost,
-        total_cost: l.quantity * l.unit_cost,
-      }));
-      await PurchaseOrderItem.insertMany(lineItems);
+      for (const l of data.lines) {
+        await addDoc(collection(db, "purchase_order_items"), {
+          po_id: docRef.id,
+          item_id: l.item_id,
+          quantity: l.quantity,
+          unit_cost: l.unit_cost,
+          total_cost: l.quantity * l.unit_cost,
+        });
+      }
     }
-    return { id: po._id.toString(), po_no: po.po_number };
+    return { id: docRef.id, po_no: poNumber };
   });
 
 export const updatePurchaseOrderFn = createServerFn({ method: "POST" })
   .validator((data) => z.object({ id: z.string(), data: z.any() }).parse(data))
   .handler(async ({ data }) => {
     await requireAuth();
-    await PurchaseOrder.findByIdAndUpdate(data.id, data.data);
+    await updateDoc(doc(db, "purchase_orders", data.id), data.data);
     return { success: true };
   });
 
@@ -215,7 +222,10 @@ export const deletePurchaseOrderFn = createServerFn({ method: "POST" })
   .validator((id: string) => z.string().parse(id))
   .handler(async ({ data }) => {
     await requireAuth();
-    await PurchaseOrder.findByIdAndDelete(data);
-    await PurchaseOrderItem.deleteMany({ po_id: data });
+    await deleteDoc(doc(db, "purchase_orders", data));
+    const itemsSnap = await getDocs(query(collection(db, "purchase_order_items"), where("po_id", "==", data)));
+    for (const itemDoc of itemsSnap.docs) {
+      await deleteDoc(doc(db, "purchase_order_items", itemDoc.id));
+    }
     return { success: true };
   });

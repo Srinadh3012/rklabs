@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { WaLog } from "../models";
+import { collection, addDoc, getDocs, query, orderBy, where } from "firebase/firestore";
+import { db } from "../firebase";
 import { requireAuth } from "../auth.server";
 
 export const logWaMessageFn = createServerFn({ method: "POST" })
@@ -17,9 +18,10 @@ export const logWaMessageFn = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { session } = await requireAuth();
     
-    await WaLog.create({
+    await addDoc(collection(db, "wa_logs"), {
       owner_id: session.userId,
       ...data,
+      created_at: new Date().toISOString(),
     });
     
     return { success: true };
@@ -33,20 +35,13 @@ export const getWaLogsFn = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     const { session } = await requireAuth();
     
-    const query: any = { owner_id: session.userId };
-    if (data.repair_id) query.repair_id = data.repair_id;
-    if (data.invoice_id) query.invoice_id = data.invoice_id;
+    // Build query constraints
+    let constraints: any[] = [where("owner_id", "==", session.userId)];
+    if (data.repair_id) constraints.push(where("repair_id", "==", data.repair_id));
+    if (data.invoice_id) constraints.push(where("invoice_id", "==", data.invoice_id));
 
-    const logs = await WaLog.find(query).sort({ created_at: -1 });
+    const q = query(collection(db, "wa_logs"), ...constraints, orderBy("created_at", "desc"));
+    const snap = await getDocs(q);
 
-    return logs.map((l: any) => ({
-      id: l._id.toString(),
-      kind: l.kind,
-      recipient_name: l.recipient_name,
-      phone: l.phone,
-      message: l.message,
-      status: l.status,
-      error: l.error,
-      created_at: l.created_at.toISOString(),
-    }));
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
   });

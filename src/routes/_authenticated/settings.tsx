@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { FileUpload } from "@/components/ui/file-upload";
+import { X } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "Settings — RK Labs" }] }),
@@ -103,6 +105,31 @@ function SettingsPage() {
           <F label="Default GST %" name="gst_percent" type="number" step="0.01" defaultValue={profile?.gst_percent ?? 18} />
         </div>
         <F label="Shop address" name="shop_address" defaultValue={profile?.shop_address ?? ""} />
+
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-slate-300">Shop Logo</Label>
+          {profile?.shop_logo && (
+            <div className="mb-4 relative w-32 h-32 rounded-lg border border-white/10 overflow-hidden bg-white/5">
+              <img src={profile.shop_logo} alt="Shop Logo" className="object-contain w-full h-full" />
+              <button 
+                type="button" 
+                onClick={() => saveShop.mutate({ shop_logo: "" })} 
+                className="absolute top-1 right-1 bg-red-500/80 p-1 rounded hover:bg-red-500 transition"
+              >
+                <X className="w-3 h-3 text-white" />
+              </button>
+            </div>
+          )}
+          <FileUpload 
+            label={profile?.shop_logo ? "Change Logo" : "Upload Logo"} 
+            folder="logos"
+            onUploadSuccess={(url) => {
+              saveShop.mutate({ shop_logo: url });
+            }}
+          />
+          <p className="text-xs text-slate-400">Used on invoice PDFs.</p>
+        </div>
+
         <div className="flex justify-end pt-2">
           <Button type="submit" disabled={saveShop.isPending} className="shadow-lg transition-transform hover:scale-105 active:scale-95" style={{ background: "var(--gradient-primary)", color: "oklch(0.12 0.02 250)" }}>
             Save shop

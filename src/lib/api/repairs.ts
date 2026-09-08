@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { Repair, RepairNote } from "../models";
+import { collection, doc, addDoc, getDocs, updateDoc, deleteDoc, query, orderBy, where } from "firebase/firestore";
+import { db } from "../firebase";
 import { requireAuth } from "../auth.server";
 
 const repairSchema = z.object({
@@ -20,61 +21,47 @@ const repairSchema = z.object({
 
 export const getRepairsFn = createServerFn({ method: "GET" })
   .handler(async () => {
-    const { session } = await requireAuth();
-    const repairs = await Repair.find().sort({ created_at: -1 });
-    return repairs.map((r) => ({
-      id: r._id.toString(),
-      ticket_no: r.ticket_no,
-      customer_id: r.customer_id,
-      device_type: r.device_type,
-      device_brand: r.device_brand,
-      device_model: r.device_model,
-      imei: r.imei,
-      issue: r.issue,
-      status: r.status,
-      technician_name: r.technician_name,
-      technician_notes: r.technician_notes,
-      estimated_completion: r.estimated_completion?.toISOString(),
-      estimated_cost: r.estimated_cost,
-      final_cost: r.final_cost,
-      appointment_at: r.appointment_at?.toISOString(),
-      created_at: r.created_at.toISOString(),
-      completed_at: r.completed_at?.toISOString(),
-      delivered_at: r.delivered_at?.toISOString(),
-      assigned_at: r.assigned_at?.toISOString(),
-    }));
+    await requireAuth();
+    const q = query(collection(db, "repairs"), orderBy("created_at", "desc"));
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
   });
 
 export const createRepairFn = createServerFn({ method: "POST" })
   .validator((data) => repairSchema.parse(data))
   .handler(async ({ data }) => {
     const { session } = await requireAuth();
-    
-    // Generate a simple ticket_no if not provided
     const ticket_no = data.ticket_no || `TK-${Date.now().toString().slice(-6)}`;
-
-    const repair = await Repair.create({
+    const now = new Date().toISOString();
+    const docRef = await addDoc(collection(db, "repairs"), {
       ...data,
       ticket_no,
       owner_id: session.userId,
+      created_at: now,
     });
-    return { id: repair._id.toString(), ticket_no: repair.ticket_no, created_at: repair.created_at.toISOString() };
+    return { id: docRef.id, ticket_no, created_at: now };
   });
 
 export const updateRepairFn = createServerFn({ method: "POST" })
   .validator((data) => z.object({ id: z.string(), data: repairSchema.partial() }).parse(data))
   .handler(async ({ data }) => {
     await requireAuth();
-    const repair = await Repair.findByIdAndUpdate(data.id, data.data, { new: true });
-    return { id: repair?._id.toString(), ticket_no: repair?.ticket_no };
+    await updateDoc(doc(db, "repairs", data.id), data.data);
+    const snap = await getDocs(query(collection(db, "repairs"), where("__name__", "==", data.id)));
+    const repairData = snap.docs[0]?.data();
+    return { id: data.id, ticket_no: repairData?.ticket_no };
   });
 
 export const deleteRepairFn = createServerFn({ method: "POST" })
   .validator((id: string) => z.string().parse(id))
   .handler(async ({ data }) => {
     await requireAuth();
-    await Repair.findByIdAndDelete(data);
-    await RepairNote.deleteMany({ repair_id: data });
+    await deleteDoc(doc(db, "repairs", data));
+    // Delete related notes
+    const notesSnap = await getDocs(query(collection(db, "repair_notes"), where("repair_id", "==", data)));
+    for (const noteDoc of notesSnap.docs) {
+      await deleteDoc(doc(db, "repair_notes", noteDoc.id));
+    }
     return { success: true };
   });
 
@@ -83,50 +70,49 @@ export const getRepairNotesFn = createServerFn({ method: "GET" })
   .validator((data) => z.object({ repair_id: z.string() }).parse(data))
   .handler(async ({ data }) => {
     await requireAuth();
-    const notes = await RepairNote.find({ repair_id: data.repair_id }).sort({ created_at: -1 });
-    return notes.map(n => ({
-      id: n._id.toString(),
-      repair_id: n.repair_id,
-      note: n.note,
-      task_done: n.task_done,
-      technician_name: n.technician_name,
-      completed_at: n.completed_at?.toISOString(),
-      created_at: n.created_at.toISOString(),
-    }));
+    const q = query(collection(db, "repair_notes"), where("repair_id", "==", data.repair_id), orderBy("created_at", "desc"));
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
   });
 
 export const createRepairNoteFn = createServerFn({ method: "POST" })
   .validator((data) => z.object({ repair_id: z.string(), note: z.string(), technician_name: z.string().optional() }).parse(data))
   .handler(async ({ data }) => {
     await requireAuth();
-    const note = await RepairNote.create(data);
-    return { id: note._id.toString() };
+    const docRef = await addDoc(collection(db, "repair_notes"), {
+      ...data,
+      task_done: false,
+      created_at: new Date().toISOString(),
+    });
+    return { id: docRef.id };
   });
 
 export const updateRepairNoteFn = createServerFn({ method: "POST" })
   .validator((data) => z.object({ id: z.string(), data: z.any() }).parse(data))
   .handler(async ({ data }) => {
     await requireAuth();
-    await RepairNote.findByIdAndUpdate(data.id, data.data);
+    await updateDoc(doc(db, "repair_notes", data.id), data.data);
     return { success: true };
   });
 
 // Appointment Events
-import { AppointmentEvent } from "../models";
-
 export const getAppointmentEventsFn = createServerFn({ method: "GET" })
   .validator((data) => z.object({ repair_id: z.string() }).parse(data))
   .handler(async ({ data }) => {
     await requireAuth();
-    const events = await AppointmentEvent.find({ repair_id: data.repair_id }).sort({ created_at: -1 });
-    return events.map(e => ({
-      id: e._id.toString(),
-      action: e.title, // 'action' is stored in title for simplicity
-      previous_at: e.start_time,
-      new_at: e.end_time,
-      note: e.notes,
-      created_at: e.created_at.toISOString(),
-    }));
+    const q = query(collection(db, "appointments"), where("repair_id", "==", data.repair_id), orderBy("created_at", "desc"));
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => {
+      const e = d.data();
+      return {
+        id: d.id,
+        action: e.title,
+        previous_at: e.start_time,
+        new_at: e.end_time,
+        note: e.notes,
+        created_at: e.created_at,
+      };
+    });
   });
 
 export const createAppointmentEventFn = createServerFn({ method: "POST" })
@@ -138,31 +124,22 @@ export const createAppointmentEventFn = createServerFn({ method: "POST" })
   }).parse(data))
   .handler(async ({ data }) => {
     const { session } = await requireAuth();
-    const event = await AppointmentEvent.create({
+    const docRef = await addDoc(collection(db, "appointments"), {
       repair_id: data.repair_id,
       title: data.action,
       start_time: data.previous_at || "",
       end_time: data.new_at || "",
       owner_id: session.userId,
+      created_at: new Date().toISOString(),
     });
-    return { id: event._id.toString() };
+    return { id: docRef.id };
   });
-
-import { WaLog } from "../models";
 
 export const getWaLogsFn = createServerFn({ method: "GET" })
   .validator((data) => z.object({ repair_id: z.string() }).parse(data))
   .handler(async ({ data }) => {
     await requireAuth();
-    const logs = await WaLog.find({ repair_id: data.repair_id }).sort({ created_at: -1 });
-    return logs.map(l => ({
-      id: l._id.toString(),
-      kind: l.kind,
-      recipient_name: l.recipient_name,
-      phone: l.phone,
-      message: l.message,
-      status: l.status,
-      error: l.error,
-      created_at: l.created_at.toISOString(),
-    }));
+    const q = query(collection(db, "wa_logs"), where("repair_id", "==", data.repair_id), orderBy("created_at", "desc"));
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
   });

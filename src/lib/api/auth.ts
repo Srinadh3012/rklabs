@@ -1,81 +1,90 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import bcrypt from "bcryptjs";
-import { Profile } from "../models";
-import connectToDatabase from "../mongodb";
+import { collection, doc, getDoc, getDocs, setDoc, query, where, getCountFromServer } from "firebase/firestore";
+import { db } from "../firebase";
 import { createSession, clearSession, getSession } from "../auth.server";
 
 const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
+  idToken: z.string(),
 });
 
 const registerSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
+  idToken: z.string(),
   fullName: z.string().min(2),
   requestedRole: z.enum(["customer", "employee", "admin"]).default("customer"),
 });
 
+async function verifyFirebaseToken(idToken: string) {
+  const apiKey = process.env.VITE_FIREBASE_API_KEY || "";
+  const res = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ idToken })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message || "Invalid Firebase Token");
+  return data.users[0]; // { localId, email }
+}
+
 export const loginFn = createServerFn({ method: "POST" })
   .validator((data) => loginSchema.parse(data))
   .handler(async ({ data }) => {
-    await connectToDatabase();
+    const firebaseUser = await verifyFirebaseToken(data.idToken);
     
-    const user = await Profile.findOne({ email: data.email });
-    if (!user) {
-      throw new Error("Invalid credentials");
+    // Find profile by email
+    const q = query(collection(db, "profiles"), where("email", "==", firebaseUser.email));
+    const snap = await getDocs(q);
+    
+    if (snap.empty) {
+      throw new Error("User profile not found in database. Please register first.");
     }
 
-    const isValid = await bcrypt.compare(data.password, user.passwordHash);
-    if (!isValid) {
-      throw new Error("Invalid credentials");
-    }
-
-    // Checking approval status might be necessary if we add it to the model.
-    // For now, allow login.
+    const userDoc = snap.docs[0];
+    const user = userDoc.data();
 
     await createSession({
-      userId: user._id.toString(),
+      userId: userDoc.id,
       email: user.email,
       role: user.role || "user",
     });
 
-    return { success: true, user: { id: user._id.toString(), email: user.email, role: user.role } };
+    return { success: true, user: { id: userDoc.id, email: user.email, role: user.role } };
   });
 
 export const registerFn = createServerFn({ method: "POST" })
   .validator((data) => registerSchema.parse(data))
   .handler(async ({ data }) => {
-    await connectToDatabase();
+    const firebaseUser = await verifyFirebaseToken(data.idToken);
     
-    const existingUser = await Profile.findOne({ email: data.email });
-    if (existingUser) {
-      throw new Error("Email already in use");
+    // Check for existing profile
+    const q = query(collection(db, "profiles"), where("email", "==", firebaseUser.email));
+    const existing = await getDocs(q);
+    if (!existing.empty) {
+      throw new Error("Email already registered in database");
     }
 
-    // First user created becomes admin by default, otherwise requestedRole or pending
-    const isFirstUser = (await Profile.countDocuments()) === 0;
-    const role = isFirstUser ? "admin" : "user"; // Simplified for this migration
+    // First user becomes admin
+    const countSnap = await getCountFromServer(collection(db, "profiles"));
+    const isFirstUser = countSnap.data().count === 0;
+    const role = isFirstUser ? "admin" : "user";
 
-    const passwordHash = await bcrypt.hash(data.password, 10);
-    
-    const newUser = await Profile.create({
-      email: data.email,
-      passwordHash,
+    // Use Firebase Auth UID as the document ID
+    const profileData = {
+      email: firebaseUser.email,
       full_name: data.fullName,
       requested_role: data.requestedRole,
       approval_status: isFirstUser ? "approved" : "pending",
       role,
-      created_at: new Date(),
-    });
+      created_at: new Date().toISOString(),
+    };
 
-    // Auto-login only if approved
-    if (newUser.approval_status === "approved") {
+    await setDoc(doc(db, "profiles", firebaseUser.localId), profileData);
+
+    if (isFirstUser) {
       await createSession({
-        userId: newUser._id.toString(),
-        email: newUser.email,
-        role: newUser.role || "user",
+        userId: firebaseUser.localId,
+        email: firebaseUser.email,
+        role,
       });
       return { success: true, status: "approved" };
     } else {
@@ -91,25 +100,26 @@ export const logoutFn = createServerFn({ method: "POST" })
 
 export const meFn = createServerFn({ method: "GET" })
   .handler(async () => {
-    await connectToDatabase();
     const session = await getSession();
     if (!session) return { user: null };
 
-    const user = await Profile.findById(session.userId);
-    if (!user) return { user: null };
+    const userSnap = await getDoc(doc(db, "profiles", session.userId));
+    if (!userSnap.exists()) return { user: null };
 
+    const user = userSnap.data();
     return { user: { 
-      id: user._id.toString(), 
+      id: userSnap.id, 
       email: user.email, 
       role: user.role, 
       approval_status: user.approval_status, 
       requested_role: user.requested_role, 
-      approved_at: user.approved_at?.toISOString(), 
+      approved_at: user.approved_at, 
       rejection_reason: user.rejection_reason,
       shop_name: user.shop_name,
       shop_address: user.shop_address,
       shop_phone: user.shop_phone,
+      shop_logo: user.shop_logo,
       gst_number: user.gst_number,
-      wa_templates: user.wa_templates
+      wa_templates: user.wa_templates,
     } };
   });
