@@ -6,17 +6,22 @@ const InputSchema = z.object({ text: z.string().min(1).max(2000) });
 export const translateToEnglish = createServerFn({ method: "POST" })
   .validator((data: unknown) => InputSchema.parse(data))
   .handler(async ({ data }) => {
-    const apiKey = process.env.LOVABLE_API_KEY;
-    if (!apiKey) throw new Error("AI gateway not configured");
+    const apiKey = process.env.AI_API_KEY;
+    const apiUrl = process.env.AI_API_URL;
 
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    if (!apiKey || !apiUrl) {
+      // AI not configured — return the original text as-is
+      return { text: data.text };
+    }
+
+    const res = await fetch(apiUrl, {
       method: "POST",
       headers: {
         "content-type": "application/json",
         authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: process.env.AI_MODEL || "gpt-4o-mini",
         messages: [
           {
             role: "system",

@@ -1,7 +1,6 @@
 import { getCookie, setCookie, deleteCookie } from "@tanstack/react-start/server";
 import jwt from "jsonwebtoken";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "./firebase";
+import { getStore } from "@/services/database";
 
 const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret_please_change_in_production";
 const COOKIE_NAME = "auth_session";
@@ -44,11 +43,12 @@ export async function requireAuth() {
   if (!session) {
     throw new Error("Unauthorized");
   }
-  
-  const userSnap = await getDoc(doc(db, "profiles", session.userId));
-  if (!userSnap.exists()) {
+
+  const store = getStore();
+  const user = store.profiles.getById(session.userId);
+  if (!user) {
     throw new Error("User not found");
   }
-  
-  return { session, user: { id: userSnap.id, ...userSnap.data() } };
+
+  return { session, user };
 }

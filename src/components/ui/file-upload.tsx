@@ -1,7 +1,5 @@
 import { useState, useRef } from "react";
-import { UploadCloud, X, Loader2, FileImage } from "lucide-react";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { storage } from "@/lib/firebase";
+import { UploadCloud, Loader2 } from "lucide-react";
 import { Button } from "./button";
 import { toast } from "sonner";
 
@@ -15,7 +13,6 @@ interface FileUploadProps {
 
 export function FileUpload({ 
   onUploadSuccess, 
-  folder = "uploads", 
   accept = "image/*", 
   maxSizeMB = 5,
   label = "Upload File"
@@ -36,35 +33,27 @@ export function FileUpload({
     setIsUploading(true);
     setProgress(0);
 
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
-      const storageRef = ref(storage, `${folder}/${fileName}`);
-      
-      const uploadTask = uploadBytesResumable(storageRef, file);
+    // MOCK UPLOAD: Simulates file upload progress then returns a local blob URL
+    // Replace this logic with your real cloud storage upload (AWS S3, Cloudinary, etc)
+    const totalTime = 1500;
+    const intervalTime = 50;
+    const steps = totalTime / intervalTime;
+    let currentStep = 0;
 
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          const p = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          setProgress(p);
-        },
-        (error) => {
-          console.error("Upload error:", error);
-          toast.error("Upload failed: " + error.message);
-          setIsUploading(false);
-        },
-        async () => {
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          onUploadSuccess(downloadURL);
-          setIsUploading(false);
-          toast.success("File uploaded successfully");
-        }
-      );
-    } catch (err: any) {
-      toast.error("An error occurred during upload");
-      setIsUploading(false);
-    }
+    const timer = setInterval(() => {
+      currentStep++;
+      setProgress((currentStep / steps) * 100);
+
+      if (currentStep >= steps) {
+        clearInterval(timer);
+        
+        // Use a local blob URL for the mock
+        const blobUrl = URL.createObjectURL(file);
+        onUploadSuccess(blobUrl);
+        setIsUploading(false);
+        toast.success("File uploaded successfully (Mock)");
+      }
+    }, intervalTime);
   };
 
   return (
@@ -85,9 +74,9 @@ export function FileUpload({
           className="w-full flex gap-2 items-center justify-center py-6 border-dashed border-white/20 bg-black/20 hover:bg-white/5 text-slate-300"
         >
           {isUploading ? (
-            <Loader2 className="h-5 w-5 animate-spin text-cyan-500" />
+            <Loader2 className="h-5 w-5 animate-spin text-[var(--neon)]" />
           ) : (
-            <UploadCloud className="h-5 w-5 text-cyan-400" />
+            <UploadCloud className="h-5 w-5 text-[var(--neon)]" />
           )}
           {isUploading ? `Uploading... ${Math.round(progress)}%` : label}
         </Button>
@@ -96,7 +85,7 @@ export function FileUpload({
       {isUploading && (
         <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
           <div 
-            className="bg-cyan-500 h-1.5 transition-all duration-300 ease-out"
+            className="bg-[var(--neon)] h-1.5 transition-all duration-300 ease-out"
             style={{ width: `${progress}%` }}
           />
         </div>

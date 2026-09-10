@@ -1,50 +1,51 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { collection, doc, getDocs, updateDoc, addDoc, query, orderBy, where } from "firebase/firestore";
-import { db } from "../firebase";
+import { getStore } from "@/services/database";
 import { requireAuth } from "../auth.server";
 
-export const getApprovalsFn = createServerFn({ method: "GET" })
-  .handler(async () => {
-    const { session, user } = await requireAuth();
-    
-    if (user.role !== "admin") {
-      throw new Error("Unauthorized: Admins only");
-    }
+export const getApprovalsFn = createServerFn({ method: "GET" }).handler(async () => {
+  const { session, user } = await requireAuth();
 
-    const q = query(collection(db, "profiles"), orderBy("created_at", "desc"));
-    const snap = await getDocs(q);
+  if (user.role !== "admin") {
+    throw new Error("Unauthorized: Admins only");
+  }
 
-    return snap.docs.map((d) => {
-      const p = d.data();
-      return {
-        id: d.id,
-        full_name: p.full_name,
-        requested_role: p.requested_role,
-        approval_status: p.approval_status || "pending",
-        created_at: p.created_at,
-        approved_at: p.approved_at,
-        rejection_reason: p.rejection_reason,
-        role: p.role,
-      };
-    });
-  });
+  const store = getStore();
+  return store.profiles
+    .list()
+    .sort((a, b) => b.created_at.localeCompare(a.created_at))
+    .map((p) => ({
+      id: p.id,
+      full_name: p.full_name,
+      requested_role: p.requested_role,
+      approval_status: p.approval_status || "pending",
+      created_at: p.created_at,
+      approved_at: p.approved_at,
+      rejection_reason: p.rejection_reason,
+      role: p.role,
+    }));
+});
 
 export const decideApprovalFn = createServerFn({ method: "POST" })
-  .validator((data) => z.object({
-    id: z.string(),
-    decision: z.enum(["approved", "rejected"]),
-    role: z.string().optional(),
-    reason: z.string().optional(),
-  }).parse(data))
+  .validator((data) =>
+    z
+      .object({
+        id: z.string(),
+        decision: z.enum(["approved", "rejected"]),
+        role: z.string().optional(),
+        reason: z.string().optional(),
+      })
+      .parse(data),
+  )
   .handler(async ({ data }) => {
     const { session, user } = await requireAuth();
-    
+
     if (user.role !== "admin") {
       throw new Error("Unauthorized: Admins only");
     }
 
-    const updateData: any = {
+    const store = getStore();
+    const updateData: Record<string, unknown> = {
       approval_status: data.decision,
       approved_by: session.userId,
     };
@@ -58,26 +59,27 @@ export const decideApprovalFn = createServerFn({ method: "POST" })
       updateData.rejection_reason = data.reason || null;
     }
 
-    await updateDoc(doc(db, "profiles", data.id), updateData);
+    store.profiles.update(data.id, updateData as any);
 
     // Create notifications
     const now = new Date().toISOString();
-    await addDoc(collection(db, "notifications"), {
+    store.notifications.create({
       user_id: data.id,
       kind: data.decision === "approved" ? "approval_approved" : "approval_rejected",
-      title: data.decision === "approved" ? "Your account was approved" : "Your account was not approved",
-      body: data.decision === "approved"
-        ? `Welcome to RK Repair Labs. You've been granted the ${data.role} role.`
-        : data.reason ?? "Please contact the shop admin for details.",
+      title:
+        data.decision === "approved" ? "Your account was approved" : "Your account was not approved",
+      body:
+        data.decision === "approved"
+          ? `Welcome to RK Repair Labs. You've been granted the ${data.role} role.`
+          : (data.reason ?? "Please contact the shop admin for details."),
       created_at: now,
     });
 
-    await addDoc(collection(db, "notifications"), {
+    store.notifications.create({
       user_id: session.userId,
       kind: data.decision === "approved" ? "approval_approved_admin" : "approval_rejected_admin",
-      title: data.decision === "approved"
-        ? `User approved as ${data.role}`
-        : `User was rejected`,
+      title:
+        data.decision === "approved" ? `User approved as ${data.role}` : `User was rejected`,
       body: data.decision === "rejected" && data.reason ? data.reason : null,
       created_at: now,
     });
@@ -86,20 +88,18 @@ export const decideApprovalFn = createServerFn({ method: "POST" })
   });
 
 export const changeRoleFn = createServerFn({ method: "POST" })
-  .validator((data) => z.object({
-    id: z.string(),
-    role: z.string(),
-  }).parse(data))
+  .validator((data) => z.object({ id: z.string(), role: z.string() }).parse(data))
   .handler(async ({ data }) => {
     const { session, user } = await requireAuth();
-    
+
     if (user.role !== "admin") {
       throw new Error("Unauthorized: Admins only");
     }
 
-    await updateDoc(doc(db, "profiles", data.id), { role: data.role });
+    const store = getStore();
+    store.profiles.update(data.id, { role: data.role } as any);
 
-    await addDoc(collection(db, "notifications"), {
+    store.notifications.create({
       user_id: data.id,
       kind: "role_changed",
       title: "Your role was updated",

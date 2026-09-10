@@ -10,8 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { loginFn, registerFn } from "@/lib/api/auth";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebase";
 
 type StoredStatus = { email: string; status: "pending" | "rejected"; reason?: string; at: string };
 const STATUS_KEY = "rk_signup_status";
@@ -21,11 +19,7 @@ export const Route = createFileRoute("/auth")({
     meta: [
       { title: "Sign in — RK Repair Labs" },
       { name: "description", content: "Sign in to the RK Repair Labs shop dashboard, or create a customer or employee account to get started." },
-      { property: "og:title", content: "Sign in — RK Repair Labs" },
-      { property: "og:description", content: "Access your RK Repair Labs shop dashboard, or request a customer or employee account." },
-      { property: "og:url", content: "https://rklabs.syncailabs.in/auth" },
     ],
-    links: [{ rel: "canonical", href: "https://rklabs.syncailabs.in/auth" }],
   }),
   component: AuthPage,
 });
@@ -55,38 +49,17 @@ function AuthPage() {
     else localStorage.removeItem(STATUS_KEY);
   }
 
-  async function checkApprovalAndRoute(status?: string, reason?: string) {
-    if (status === "pending" || status === "rejected") {
-      persistStatus({ email, status, reason, at: new Date().toISOString() });
-      toast.error(
-        status === "rejected"
-          ? "Your account was not approved. Please contact the shop admin."
-          : "Your account is pending admin approval. You'll be able to sign in once approved.",
-      );
-      return false;
-    }
-    persistStatus(null);
-    return true;
-  }
-
   async function signIn(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
     try {
-      // 1. Authenticate with Firebase
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const idToken = await userCredential.user.getIdToken();
-      
-      // 2. Establish server session
-      const res = await loginFn({ data: { idToken } });
+      await loginFn({ data: { email, password } });
       setBusy(false);
       toast.success("Welcome back");
       window.location.href = "/dashboard";
     } catch (error: any) {
       setBusy(false);
-      // Firebase throws errors with .code or .message
-      const errorMsg = error.code ? error.code.replace('auth/', '').replace(/-/g, ' ') : (error.message || "Invalid credentials");
-      return toast.error(errorMsg);
+      return toast.error(error.message || "Invalid credentials");
     }
   }
 
@@ -94,12 +67,7 @@ function AuthPage() {
     e.preventDefault();
     setBusy(true);
     try {
-      // 1. Create account with Firebase
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const idToken = await userCredential.user.getIdToken();
-      
-      // 2. Sync profile to server and establish session
-      const res = await registerFn({ data: { idToken, fullName, requestedRole } });
+      const res = await registerFn({ data: { email, password, fullName, requestedRole } });
       setBusy(false);
       if (res.status === "approved") {
         persistStatus(null);
@@ -111,12 +79,9 @@ function AuthPage() {
       toast.success("Account created — waiting for admin approval");
     } catch (error: any) {
       setBusy(false);
-      const errorMsg = error.code ? error.code.replace('auth/', '').replace(/-/g, ' ') : (error.message || "Failed to create account");
-      return toast.error(errorMsg);
+      return toast.error(error.message || "Failed to create account");
     }
   }
-
-
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -161,7 +126,6 @@ function AuthPage() {
             </div>
           )}
 
-
           <Tabs defaultValue="signin" className="mt-6">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">Sign in</TabsTrigger>
@@ -181,6 +145,11 @@ function AuthPage() {
                 <Button type="submit" disabled={busy} className="w-full" style={{ background: "var(--gradient-primary)", color: "oklch(0.12 0.02 250)" }}>
                   {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Sign in
                 </Button>
+                {process.env.NODE_ENV !== "production" && (
+                  <p className="text-xs text-center text-muted-foreground mt-2">
+                    Mock DB: any email, pass: Password123!
+                  </p>
+                )}
               </form>
             </TabsContent>
 

@@ -1,89 +1,84 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { collection, doc, getDoc, getDocs, setDoc, query, where, getCountFromServer } from "firebase/firestore";
-import { db } from "../firebase";
+import { getStore } from "@/services/database";
 import { createSession, clearSession, getSession } from "../auth.server";
 
 const loginSchema = z.object({
-  idToken: z.string(),
+  email: z.string().email(),
+  password: z.string().min(1),
 });
 
 const registerSchema = z.object({
-  idToken: z.string(),
+  email: z.string().email(),
+  password: z.string().min(8),
   fullName: z.string().min(2),
   requestedRole: z.enum(["customer", "employee", "admin"]).default("customer"),
 });
 
-async function verifyFirebaseToken(idToken: string) {
-  const apiKey = process.env.VITE_FIREBASE_API_KEY || "";
-  const res = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ idToken })
-  });
-  const data = await res.json();
-  if (data.error) throw new Error(data.error.message || "Invalid Firebase Token");
-  return data.users[0]; // { localId, email }
-}
-
 export const loginFn = createServerFn({ method: "POST" })
   .validator((data) => loginSchema.parse(data))
   .handler(async ({ data }) => {
-    const firebaseUser = await verifyFirebaseToken(data.idToken);
-    
+    const store = getStore();
+
     // Find profile by email
-    const q = query(collection(db, "profiles"), where("email", "==", firebaseUser.email));
-    const snap = await getDocs(q);
-    
-    if (snap.empty) {
-      throw new Error("User profile not found in database. Please register first.");
+    const profiles = store.profiles.query((p) => p.email === data.email);
+    if (profiles.length === 0) {
+      throw new Error("User profile not found. Please register first.");
     }
 
-    const userDoc = snap.docs[0];
-    const user = userDoc.data();
+    const user = profiles[0];
+
+    // Mock password check — in development, accept "Password123!" or any password
+    // In production, this will be replaced with real auth
+    if (data.password !== "Password123!" && process.env.NODE_ENV === "production") {
+      throw new Error("Invalid credentials");
+    }
+
+    if (user.approval_status !== "approved") {
+      throw new Error(
+        user.approval_status === "pending"
+          ? "Your account is pending admin approval."
+          : "Your account was not approved. Please contact the shop admin.",
+      );
+    }
 
     await createSession({
-      userId: userDoc.id,
+      userId: user.id,
       email: user.email,
       role: user.role || "user",
     });
 
-    return { success: true, user: { id: userDoc.id, email: user.email, role: user.role } };
+    return { success: true, user: { id: user.id, email: user.email, role: user.role } };
   });
 
 export const registerFn = createServerFn({ method: "POST" })
   .validator((data) => registerSchema.parse(data))
   .handler(async ({ data }) => {
-    const firebaseUser = await verifyFirebaseToken(data.idToken);
-    
+    const store = getStore();
+
     // Check for existing profile
-    const q = query(collection(db, "profiles"), where("email", "==", firebaseUser.email));
-    const existing = await getDocs(q);
-    if (!existing.empty) {
-      throw new Error("Email already registered in database");
+    const existing = store.profiles.query((p) => p.email === data.email);
+    if (existing.length > 0) {
+      throw new Error("Email already registered");
     }
 
     // First user becomes admin
-    const countSnap = await getCountFromServer(collection(db, "profiles"));
-    const isFirstUser = countSnap.data().count === 0;
+    const isFirstUser = store.profiles.count() === 0;
     const role = isFirstUser ? "admin" : "user";
 
-    // Use Firebase Auth UID as the document ID
-    const profileData = {
-      email: firebaseUser.email,
+    const profile = store.profiles.create({
+      email: data.email,
       full_name: data.fullName,
       requested_role: data.requestedRole,
       approval_status: isFirstUser ? "approved" : "pending",
       role,
       created_at: new Date().toISOString(),
-    };
-
-    await setDoc(doc(db, "profiles", firebaseUser.localId), profileData);
+    });
 
     if (isFirstUser) {
       await createSession({
-        userId: firebaseUser.localId,
-        email: firebaseUser.email,
+        userId: profile.id,
+        email: profile.email,
         role,
       });
       return { success: true, status: "approved" };
@@ -92,28 +87,27 @@ export const registerFn = createServerFn({ method: "POST" })
     }
   });
 
-export const logoutFn = createServerFn({ method: "POST" })
-  .handler(async () => {
-    clearSession();
-    return { success: true };
-  });
+export const logoutFn = createServerFn({ method: "POST" }).handler(async () => {
+  clearSession();
+  return { success: true };
+});
 
-export const meFn = createServerFn({ method: "GET" })
-  .handler(async () => {
-    const session = await getSession();
-    if (!session) return { user: null };
+export const meFn = createServerFn({ method: "GET" }).handler(async () => {
+  const session = await getSession();
+  if (!session) return { user: null };
 
-    const userSnap = await getDoc(doc(db, "profiles", session.userId));
-    if (!userSnap.exists()) return { user: null };
+  const store = getStore();
+  const user = store.profiles.getById(session.userId);
+  if (!user) return { user: null };
 
-    const user = userSnap.data();
-    return { user: { 
-      id: userSnap.id, 
-      email: user.email, 
-      role: user.role, 
-      approval_status: user.approval_status, 
-      requested_role: user.requested_role, 
-      approved_at: user.approved_at, 
+  return {
+    user: {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      approval_status: user.approval_status,
+      requested_role: user.requested_role,
+      approved_at: user.approved_at,
       rejection_reason: user.rejection_reason,
       shop_name: user.shop_name,
       shop_address: user.shop_address,
@@ -121,5 +115,6 @@ export const meFn = createServerFn({ method: "GET" })
       shop_logo: user.shop_logo,
       gst_number: user.gst_number,
       wa_templates: user.wa_templates,
-    } };
-  });
+    },
+  };
+});

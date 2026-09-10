@@ -45,8 +45,8 @@ This project is built using a modern, scalable JavaScript/TypeScript stack:
 - **Icons**: [Lucide React](https://lucide.dev/)
 - **Charts**: [Recharts](https://recharts.org/)
 - **PDF Generation**: `@react-pdf/renderer`
-- **Backend/Database**: [Supabase](https://supabase.com/) (PostgreSQL + Auth)
-- **Deployment & Edge**: Built with [Lovable](https://lovable.dev) / Nitro Bundler
+- **Backend/Database**: Decoupled Repository Pattern (currently using In-Memory Mock Store, ready for PostgreSQL/MongoDB/Firebase)
+- **Deployment**: Nitro Bundler / Vercel / Node Server
 
 ---
 
@@ -101,19 +101,7 @@ src/
 
 ---
 
-## ☁️ Lovable Integration
 
-This project was initially bootstrapped and developed alongside [Lovable](https://lovable.dev).
-
-**Live App**: https://rklabs.lovable.app
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/5d5d47cf-059d-451e-82ec-aace12681c92).
-
-- **Ship faster**: Describe what you want to build and Lovable handles the code.
-- **Stay in sync**: Every change made in Lovable is committed straight to this repository.
-- **Full ownership**: This code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
----
 
 <div align="center">
   <i>Designed & Developed for RK Repair Labs</i>

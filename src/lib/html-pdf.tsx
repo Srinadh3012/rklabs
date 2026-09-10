@@ -23,7 +23,7 @@ export async function generatePdfFromHtml({ type, shop, invoice, customer, repai
       container.style.position = "absolute";
       container.style.top = "-9999px";
       container.style.left = "-9999px";
-      
+
       document.body.appendChild(container);
       const root = createRoot(container);
 
@@ -31,14 +31,14 @@ export async function generatePdfFromHtml({ type, shop, invoice, customer, repai
       flushSync(() => {
         if (type === "invoice") {
           root.render(
-            <InvoiceTemplate 
-              shop={shop} invoice={invoice} customer={customer} repair={repair} items={items} 
+            <InvoiceTemplate
+              shop={shop} invoice={invoice} customer={customer} repair={repair} items={items}
             />
           );
         } else {
           root.render(
-            <IntakeReceiptTemplate 
-              shop={shop} invoice={invoice} customer={customer} repair={repair} items={items} 
+            <IntakeReceiptTemplate
+              shop={shop} invoice={invoice} customer={customer} repair={repair} items={items}
             />
           );
         }
@@ -56,7 +56,7 @@ export async function generatePdfFromHtml({ type, shop, invoice, customer, repai
       // Clean up DOM
       root.unmount();
       container.remove();
-      
+
       // Calculate A4 dimensions (jsPDF uses points by default, A4 is 595.28 x 841.89)
       const pdf = new jsPDF({
         orientation: "portrait",
@@ -66,7 +66,7 @@ export async function generatePdfFromHtml({ type, shop, invoice, customer, repai
 
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
-      
+
       const imgProps = pdf.getImageProperties(imgData);
       const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
@@ -74,10 +74,10 @@ export async function generatePdfFromHtml({ type, shop, invoice, customer, repai
 
       // If content overflows A4 height, we might need multiple pages, but IntakeReceiptTemplate is designed to fit in one A4 page.
       if (imgHeight > pdfHeight) {
-          // If it happens to be slightly larger, let's just scale it to fit one page.
-          pdf.deletePage(1);
-          pdf.addPage("a4", "portrait");
-          pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
+        // If it happens to be slightly larger, let's just scale it to fit one page.
+        pdf.deletePage(1);
+        pdf.addPage("a4", "portrait");
+        pdf.addImage(imgData, "JPEG", 0, 0, pdfWidth, pdfHeight);
       }
 
       resolve(pdf);
