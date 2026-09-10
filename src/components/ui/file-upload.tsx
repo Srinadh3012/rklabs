@@ -11,11 +11,11 @@ interface FileUploadProps {
   label?: string;
 }
 
-export function FileUpload({ 
-  onUploadSuccess, 
-  accept = "image/*", 
+export function FileUpload({
+  onUploadSuccess,
+  accept = "image/*",
   maxSizeMB = 5,
-  label = "Upload File"
+  label = "Upload File",
 }: FileUploadProps) {
   const [progress, setProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
@@ -46,7 +46,7 @@ export function FileUpload({
 
       if (currentStep >= steps) {
         clearInterval(timer);
-        
+
         // Use a local blob URL for the mock
         const blobUrl = URL.createObjectURL(file);
         onUploadSuccess(blobUrl);
@@ -59,16 +59,16 @@ export function FileUpload({
   return (
     <div className="space-y-4 w-full">
       <div className="flex items-center gap-4">
-        <input 
-          type="file" 
-          ref={fileInputRef} 
-          className="hidden" 
-          accept={accept} 
-          onChange={handleFileChange} 
+        <input
+          type="file"
+          ref={fileInputRef}
+          className="hidden"
+          accept={accept}
+          onChange={handleFileChange}
         />
-        <Button 
-          type="button" 
-          variant="outline" 
+        <Button
+          type="button"
+          variant="outline"
           onClick={() => fileInputRef.current?.click()}
           disabled={isUploading}
           className="w-full flex gap-2 items-center justify-center py-6 border-dashed border-white/20 bg-black/20 hover:bg-white/5 text-slate-300"
@@ -81,10 +81,10 @@ export function FileUpload({
           {isUploading ? `Uploading... ${Math.round(progress)}%` : label}
         </Button>
       </div>
-      
+
       {isUploading && (
         <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-          <div 
+          <div
             className="bg-[var(--neon)] h-1.5 transition-all duration-300 ease-out"
             style={{ width: `${progress}%` }}
           />

@@ -59,13 +59,14 @@ function ApprovalsPage() {
       <div className="mx-auto mt-16 max-w-md rounded-2xl border border-white/10 bg-[#0f172a]/80 backdrop-blur-xl p-8 text-center shadow-lg">
         <ShieldCheck className="mx-auto mb-4 h-10 w-10 text-cyan-400" />
         <div className="text-xl font-bold tracking-tight text-slate-200">Admins only</div>
-        <p className="mt-2 text-sm text-slate-400">You need the admin role to review account approvals.</p>
+        <p className="mt-2 text-sm text-slate-400">
+          You need the admin role to review account approvals.
+        </p>
       </div>
     );
   }
   return <ApprovalsInner />;
 }
-
 
 function ApprovalsInner() {
   const qc = useQueryClient();
@@ -77,13 +78,21 @@ function ApprovalsInner() {
   });
 
   const decide = useMutation({
-    mutationFn: async (args: { id: string; decision: "approved" | "rejected"; role?: AppRole; reason?: string; name?: string | null }) => {
-      await decideApprovalFn({ data: { 
-        id: args.id, 
-        decision: args.decision, 
-        role: args.role, 
-        reason: args.reason 
-      } });
+    mutationFn: async (args: {
+      id: string;
+      decision: "approved" | "rejected";
+      role?: AppRole;
+      reason?: string;
+      name?: string | null;
+    }) => {
+      await decideApprovalFn({
+        data: {
+          id: args.id,
+          decision: args.decision,
+          role: args.role,
+          reason: args.reason,
+        },
+      });
     },
     onSuccess: (_r, args) => {
       qc.invalidateQueries({ queryKey: ["approvals"] });
@@ -118,29 +127,73 @@ function ApprovalsInner() {
   const approved = rows.filter((r) => r.approval_status === "approved");
   const rejected = rows.filter((r) => r.approval_status === "rejected");
 
-
   return (
-    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-7xl space-y-6">
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="mx-auto max-w-7xl space-y-6"
+    >
       <div className="flex flex-col gap-1.5 border-b border-white/10 pb-6">
         <h1 className="text-3xl font-bold tracking-tight">Account approvals</h1>
-        <p className="text-sm text-slate-400">Review new signups and assign a role before granting access.</p>
+        <p className="text-sm text-slate-400">
+          Review new signups and assign a role before granting access.
+        </p>
       </div>
 
       <Tabs defaultValue="pending" className="space-y-6">
         <TabsList className="bg-[#0f172a]/80 backdrop-blur-xl border border-white/10 p-1 h-auto rounded-lg">
-          <TabsTrigger value="pending" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">Pending ({pending.length})</TabsTrigger>
-          <TabsTrigger value="approved" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">Approved ({approved.length})</TabsTrigger>
-          <TabsTrigger value="rejected" className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400">Rejected ({rejected.length})</TabsTrigger>
+          <TabsTrigger
+            value="pending"
+            className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400"
+          >
+            Pending ({pending.length})
+          </TabsTrigger>
+          <TabsTrigger
+            value="approved"
+            className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400"
+          >
+            Approved ({approved.length})
+          </TabsTrigger>
+          <TabsTrigger
+            value="rejected"
+            className="data-[state=active]:bg-cyan-500/20 data-[state=active]:text-cyan-400"
+          >
+            Rejected ({rejected.length})
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="pending">
-          <List rows={pending} kind="pending" decide={decide.mutate} busy={decide.isPending} rolesMap={rolesMap} onChangeRole={changeRole.mutate} changing={changeRole.isPending} />
+          <List
+            rows={pending}
+            kind="pending"
+            decide={decide.mutate}
+            busy={decide.isPending}
+            rolesMap={rolesMap}
+            onChangeRole={changeRole.mutate}
+            changing={changeRole.isPending}
+          />
         </TabsContent>
         <TabsContent value="approved">
-          <List rows={approved} kind="approved" decide={decide.mutate} busy={decide.isPending} rolesMap={rolesMap} onChangeRole={changeRole.mutate} changing={changeRole.isPending} />
+          <List
+            rows={approved}
+            kind="approved"
+            decide={decide.mutate}
+            busy={decide.isPending}
+            rolesMap={rolesMap}
+            onChangeRole={changeRole.mutate}
+            changing={changeRole.isPending}
+          />
         </TabsContent>
         <TabsContent value="rejected">
-          <List rows={rejected} kind="rejected" decide={decide.mutate} busy={decide.isPending} rolesMap={rolesMap} onChangeRole={changeRole.mutate} changing={changeRole.isPending} />
+          <List
+            rows={rejected}
+            kind="rejected"
+            decide={decide.mutate}
+            busy={decide.isPending}
+            rolesMap={rolesMap}
+            onChangeRole={changeRole.mutate}
+            changing={changeRole.isPending}
+          />
         </TabsContent>
       </Tabs>
     </motion.div>
@@ -150,7 +203,13 @@ function ApprovalsInner() {
 type ListProps = {
   rows: Profile[];
   kind: "pending" | "approved" | "rejected";
-  decide: (args: { id: string; decision: "approved" | "rejected"; role?: AppRole; reason?: string; name?: string | null }) => void;
+  decide: (args: {
+    id: string;
+    decision: "approved" | "rejected";
+    role?: AppRole;
+    reason?: string;
+    name?: string | null;
+  }) => void;
   busy: boolean;
   rolesMap: Record<string, AppRole[]>;
   onChangeRole: (args: { id: string; role: AppRole; name: string | null }) => void;
@@ -168,12 +227,20 @@ function List({ rows, kind, decide, busy, rolesMap, onChangeRole, changing }: Li
   return (
     <div className="grid gap-3">
       {rows.map((r) => (
-        <Row key={r.id} row={r} kind={kind} decide={decide} busy={busy} currentRoles={rolesMap[r.id] ?? []} onChangeRole={onChangeRole} changing={changing} />
+        <Row
+          key={r.id}
+          row={r}
+          kind={kind}
+          decide={decide}
+          busy={busy}
+          currentRoles={rolesMap[r.id] ?? []}
+          onChangeRole={onChangeRole}
+          changing={changing}
+        />
       ))}
     </div>
   );
 }
-
 
 function Row({
   row,
@@ -186,14 +253,22 @@ function Row({
 }: {
   row: Profile;
   kind: "pending" | "approved" | "rejected";
-  decide: (args: { id: string; decision: "approved" | "rejected"; role?: AppRole; reason?: string; name?: string | null }) => void;
+  decide: (args: {
+    id: string;
+    decision: "approved" | "rejected";
+    role?: AppRole;
+    reason?: string;
+    name?: string | null;
+  }) => void;
   busy: boolean;
   currentRoles: AppRole[];
   onChangeRole: (args: { id: string; role: AppRole; name: string | null }) => void;
   changing: boolean;
 }) {
   const [role, setRole] = useState<AppRole>((row.requested_role as AppRole) ?? "customer");
-  const [editRole, setEditRole] = useState<AppRole>(currentRoles[0] ?? (row.requested_role as AppRole) ?? "customer");
+  const [editRole, setEditRole] = useState<AppRole>(
+    currentRoles[0] ?? (row.requested_role as AppRole) ?? "customer",
+  );
   return (
     <div className="rounded-xl border border-white/10 bg-[#0f172a]/60 p-4 transition-all hover:bg-white/[0.02]">
       <div className="flex flex-wrap items-center gap-3 justify-between mb-4">
@@ -210,20 +285,26 @@ function Row({
             </span>
           )}
         </div>
-        <span className="text-xs font-medium text-slate-500">Signed up {fmtDateTime(row.created_at)}</span>
+        <span className="text-xs font-medium text-slate-500">
+          Signed up {fmtDateTime(row.created_at)}
+        </span>
       </div>
       <div className="flex flex-wrap items-center justify-between gap-3 bg-black/20 p-3 rounded-lg border border-white/5">
         {kind === "pending" ? (
           <>
             <div className="flex items-center gap-3">
-              <span className="text-xs uppercase tracking-widest text-slate-400 font-bold">Assign role</span>
+              <span className="text-xs uppercase tracking-widest text-slate-400 font-bold">
+                Assign role
+              </span>
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value as AppRole)}
                 className="h-9 rounded-md border border-white/10 bg-[#0f172a] px-3 text-sm focus:border-cyan-500/50 outline-none text-slate-200"
               >
                 {ROLE_OPTIONS.map((r) => (
-                  <option key={r} value={r} className="bg-[#0f172a]">{r}</option>
+                  <option key={r} value={r} className="bg-[#0f172a]">
+                    {r}
+                  </option>
                 ))}
               </select>
             </div>
@@ -231,7 +312,9 @@ function Row({
               <Button
                 size="sm"
                 disabled={busy}
-                onClick={() => decide({ id: row.id, decision: "approved", role, name: row.full_name })}
+                onClick={() =>
+                  decide({ id: row.id, decision: "approved", role, name: row.full_name })
+                }
                 className="shadow-lg transition-transform hover:scale-105 active:scale-95"
                 style={{ background: "var(--gradient-primary)", color: "oklch(0.12 0.02 250)" }}
               >
@@ -257,14 +340,18 @@ function Row({
               Approved {row.approved_at ? fmtDateTime(row.approved_at) : "—"}
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-xs uppercase tracking-widest text-slate-400 font-bold">Change role</span>
+              <span className="text-xs uppercase tracking-widest text-slate-400 font-bold">
+                Change role
+              </span>
               <select
                 value={editRole}
                 onChange={(e) => setEditRole(e.target.value as AppRole)}
                 className="h-9 rounded-md border border-white/10 bg-[#0f172a] px-3 text-sm focus:border-cyan-500/50 outline-none text-slate-200"
               >
                 {ROLE_OPTIONS.map((r) => (
-                  <option key={r} value={r} className="bg-[#0f172a]">{r}</option>
+                  <option key={r} value={r} className="bg-[#0f172a]">
+                    {r}
+                  </option>
                 ))}
               </select>
               <Button
@@ -281,11 +368,14 @@ function Row({
         ) : (
           <div className="text-sm font-medium text-slate-400">
             <span className="text-red-400 font-semibold">Rejected</span>
-            {row.rejection_reason ? <span className="ml-2 text-slate-500">· {row.rejection_reason}</span> : ""}
+            {row.rejection_reason ? (
+              <span className="ml-2 text-slate-500">· {row.rejection_reason}</span>
+            ) : (
+              ""
+            )}
           </div>
         )}
       </div>
     </div>
   );
-
 }

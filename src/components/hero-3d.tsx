@@ -1,5 +1,12 @@
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, MeshDistortMaterial, Sphere, Icosahedron, TorusKnot, Environment } from "@react-three/drei";
+import {
+  Float,
+  MeshDistortMaterial,
+  Sphere,
+  Icosahedron,
+  TorusKnot,
+  Environment,
+} from "@react-three/drei";
 import { useRef, Suspense } from "react";
 import type { Mesh } from "three";
 
@@ -13,7 +20,13 @@ function Blob() {
   return (
     <Sphere ref={ref} args={[1.4, 96, 96]} position={[0, 0, 0]}>
       {/* @ts-ignore drei prop typing */}
-      <MeshDistortMaterial color="#22d3ee" distort={0.45} speed={2.2} roughness={0.15} metalness={0.6} />
+      <MeshDistortMaterial
+        color="#22d3ee"
+        distort={0.45}
+        speed={2.2}
+        roughness={0.15}
+        metalness={0.6}
+      />
     </Sphere>
   );
 }
@@ -28,7 +41,13 @@ function Knot() {
   return (
     <Float speed={2} rotationIntensity={1.2} floatIntensity={1.5}>
       <TorusKnot ref={ref} args={[0.55, 0.17, 180, 32]} position={[2.4, 1.1, -1]}>
-        <meshStandardMaterial color="#3b82f6" metalness={0.85} roughness={0.2} emissive="#1d4ed8" emissiveIntensity={0.35} />
+        <meshStandardMaterial
+          color="#3b82f6"
+          metalness={0.85}
+          roughness={0.2}
+          emissive="#1d4ed8"
+          emissiveIntensity={0.35}
+        />
       </TorusKnot>
     </Float>
   );
@@ -38,7 +57,14 @@ function Crystal() {
   return (
     <Float speed={1.4} rotationIntensity={1} floatIntensity={2}>
       <Icosahedron args={[0.65, 0]} position={[-2.5, -1, -0.5]}>
-        <meshStandardMaterial color="#a855f7" metalness={0.7} roughness={0.25} emissive="#7c3aed" emissiveIntensity={0.3} flatShading />
+        <meshStandardMaterial
+          color="#a855f7"
+          metalness={0.7}
+          roughness={0.25}
+          emissive="#7c3aed"
+          emissiveIntensity={0.3}
+          flatShading
+        />
       </Icosahedron>
     </Float>
   );

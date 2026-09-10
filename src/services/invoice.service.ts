@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { invoiceRepository } from "@/repositories/invoice.repository";
 
 export class InvoiceService {

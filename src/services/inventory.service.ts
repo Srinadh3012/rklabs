@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { inventoryRepository } from "@/repositories/inventory.repository";
 
 export class InventoryService {

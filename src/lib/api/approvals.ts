@@ -67,7 +67,9 @@ export const decideApprovalFn = createServerFn({ method: "POST" })
       user_id: data.id,
       kind: data.decision === "approved" ? "approval_approved" : "approval_rejected",
       title:
-        data.decision === "approved" ? "Your account was approved" : "Your account was not approved",
+        data.decision === "approved"
+          ? "Your account was approved"
+          : "Your account was not approved",
       body:
         data.decision === "approved"
           ? `Welcome to RK Repair Labs. You've been granted the ${data.role} role.`
@@ -78,8 +80,7 @@ export const decideApprovalFn = createServerFn({ method: "POST" })
     store.notifications.create({
       user_id: session.userId,
       kind: data.decision === "approved" ? "approval_approved_admin" : "approval_rejected_admin",
-      title:
-        data.decision === "approved" ? `User approved as ${data.role}` : `User was rejected`,
+      title: data.decision === "approved" ? `User approved as ${data.role}` : `User was rejected`,
       body: data.decision === "rejected" && data.reason ? data.reason : null,
       created_at: now,
     });

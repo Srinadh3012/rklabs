@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { repairRepository } from "@/repositories/repair.repository";
 
 export class RepairService {

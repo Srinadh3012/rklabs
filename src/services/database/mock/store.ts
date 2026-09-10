@@ -6,9 +6,21 @@
 
 import * as seed from "./data";
 import type {
-  Profile, Customer, Repair, RepairNote, Invoice, InvoiceItem,
-  InventoryItem, StockMovement, Supplier, PurchaseOrder, PurchaseOrderItem,
-  Expense, Notification, WaLog, Appointment,
+  Profile,
+  Customer,
+  Repair,
+  RepairNote,
+  Invoice,
+  InvoiceItem,
+  InventoryItem,
+  StockMovement,
+  Supplier,
+  PurchaseOrder,
+  PurchaseOrderItem,
+  Expense,
+  Notification,
+  WaLog,
+  Appointment,
 } from "@/types/models";
 
 // ---------------------------------------------------------------------------

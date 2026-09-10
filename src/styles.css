@@ -134,10 +134,20 @@
 }
 
 @layer base {
-  * { border-color: var(--color-border); }
-  html, body, #app { min-height: 100%; }
-  html { color-scheme: dark; }
-  html.light { color-scheme: light; }
+  * {
+    border-color: var(--color-border);
+  }
+  html,
+  body,
+  #app {
+    min-height: 100%;
+  }
+  html {
+    color-scheme: dark;
+  }
+  html.light {
+    color-scheme: light;
+  }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
@@ -201,7 +211,8 @@ select option:hover {
     display: none !important;
   }
 
-  html, body {
+  html,
+  body {
     background: #fff !important;
     color: #000 !important;
     -webkit-print-color-adjust: exact !important;
@@ -209,7 +220,8 @@ select option:hover {
   }
 
   /* Ensure no shadows, borders, or backdrop effects leak into print */
-  .glass, .glass-strong {
+  .glass,
+  .glass-strong {
     background: transparent !important;
     backdrop-filter: none !important;
     box-shadow: none !important;

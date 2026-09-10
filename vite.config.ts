@@ -4,7 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 import tsConfigPaths from "vite-tsconfig-paths";
 import { defineConfig, loadEnv } from "vite";
 
-export default defineConfig(({ command, mode }) => {
+export default defineConfig(async ({ command, mode }) => {
   // Inject VITE_* env vars as define constants
   const loadedEnv = loadEnv(mode, process.cwd(), "VITE_");
   const envDefine: Record<string, string> = {};
@@ -24,21 +24,17 @@ export default defineConfig(({ command, mode }) => {
     react(),
   ];
 
-  // Add nitro build plugin for production builds
   if (command === "build") {
-    import("nitro/vite")
-      .then(({ nitro }) => {
-        plugins.push(
-          nitro({
-            defaultPreset: process.env.VERCEL
-              ? "vercel"
-              : "node-server",
-          }),
-        );
-      })
-      .catch(() => {
-        // Nitro not installed — skip deploy plugin
-      });
+    try {
+      const { nitro } = await import("nitro/vite");
+      plugins.push(
+        nitro({
+          defaultPreset: process.env.VERCEL ? "vercel" : "node-server",
+        })
+      );
+    } catch (e) {
+      // Nitro not installed
+    }
   }
 
   return {

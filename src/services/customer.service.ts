@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { customerRepository } from "@/repositories/customer.repository";
 
 export class CustomerService {

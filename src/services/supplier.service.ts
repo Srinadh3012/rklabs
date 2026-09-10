@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { supplierRepository } from "@/repositories/supplier.repository";
 
 export class SupplierService {

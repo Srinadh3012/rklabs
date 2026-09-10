@@ -17,13 +17,17 @@ export const repairs = pgTable("repairs", {
   estimated_cost: real("estimated_cost"),
   final_cost: real("final_cost"),
   appointment_at: timestamp("appointment_at"),
-  owner_id: uuid("owner_id").references(() => profiles.id).notNull(),
+  owner_id: uuid("owner_id")
+    .references(() => profiles.id)
+    .notNull(),
   created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const repairNotes = pgTable("repair_notes", {
   id: uuid("id").primaryKey().defaultRandom(),
-  repair_id: uuid("repair_id").references(() => repairs.id).notNull(),
+  repair_id: uuid("repair_id")
+    .references(() => repairs.id)
+    .notNull(),
   note: text("note").notNull(),
   technician_name: varchar("technician_name", { length: 255 }),
   task_done: boolean("task_done").notNull().default(false),
@@ -32,11 +36,15 @@ export const repairNotes = pgTable("repair_notes", {
 
 export const appointments = pgTable("appointments", {
   id: uuid("id").primaryKey().defaultRandom(),
-  repair_id: uuid("repair_id").references(() => repairs.id).notNull(),
+  repair_id: uuid("repair_id")
+    .references(() => repairs.id)
+    .notNull(),
   title: varchar("title", { length: 255 }).notNull(),
   start_time: timestamp("start_time").notNull(),
   end_time: timestamp("end_time").notNull(),
   notes: text("notes"),
-  owner_id: uuid("owner_id").references(() => profiles.id).notNull(),
+  owner_id: uuid("owner_id")
+    .references(() => profiles.id)
+    .notNull(),
   created_at: timestamp("created_at").defaultNow().notNull(),
 });

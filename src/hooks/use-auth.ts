@@ -12,13 +12,15 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    meFn().then(({ user }) => {
-      setUser(user);
-      setLoading(false);
-    }).catch(() => {
-      setUser(null);
-      setLoading(false);
-    });
+    meFn()
+      .then(({ user }) => {
+        setUser(user);
+        setLoading(false);
+      })
+      .catch(() => {
+        setUser(null);
+        setLoading(false);
+      });
   }, []);
 
   return { session: user ? { user } : null, user, loading };

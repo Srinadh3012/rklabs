@@ -18,7 +18,11 @@ export class PurchaseOrderRepository {
   }
 
   async update(id: string, data: any) {
-    const result = await db.update(purchaseOrders).set(data).where(eq(purchaseOrders.id, id)).returning();
+    const result = await db
+      .update(purchaseOrders)
+      .set(data)
+      .where(eq(purchaseOrders.id, id))
+      .returning();
     return result[0];
   }
 

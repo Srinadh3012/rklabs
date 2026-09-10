@@ -36,7 +36,9 @@ export const createInventoryItemFn = createServerFn({ method: "POST" })
   });
 
 export const updateInventoryItemFn = createServerFn({ method: "POST" })
-  .validator((data) => z.object({ id: z.string(), data: inventoryItemSchema.partial() }).parse(data))
+  .validator((data) =>
+    z.object({ id: z.string(), data: inventoryItemSchema.partial() }).parse(data),
+  )
   .handler(async ({ data }) => {
     await requireAuth();
     const store = getStore();

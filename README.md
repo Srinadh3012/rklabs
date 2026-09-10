@@ -8,9 +8,10 @@
 
 ## 📖 Overview
 
-**RK Repair Labs Management System** is a complete, production-ready SaaS application designed for mobile repair shops, laptop repair centers, and electronics service businesses. 
+**RK Repair Labs Management System** is a complete, production-ready SaaS application designed for mobile repair shops, laptop repair centers, and electronics service businesses.
 
 It provides a seamless dual-experience architecture:
+
 1. **Public Marketing Website**: A highly optimized, modern lead-generation frontend for customers to view services, learn about the brand, contact the shop, and track their repair status in real-time.
 2. **Internal SaaS Dashboard**: A secure, comprehensive business management backend for owners, technicians, and staff to manage day-to-day operations, billing, inventory, and analytics.
 
@@ -19,12 +20,14 @@ It provides a seamless dual-experience architecture:
 ## ✨ Key Features
 
 ### 🏢 Public Website (Customer-Facing)
+
 - **Modern Landing Pages**: Home, Services, About, and Contact pages built with responsive Tailwind CSS and Framer Motion micro-animations.
 - **Live Repair Tracking**: Customers can enter their unique `Ticket ID` to view live repair progress and technician notes.
 - **WhatsApp Quick Chat**: Integrated WhatsApp redirection for instant customer support.
 - **Google Maps Integration**: Interactive location maps for easy physical store navigation.
 
 ### 🔐 Internal Dashboard (Business-Facing)
+
 - **Comprehensive Repair Workflow**: Track repairs through multiple stages (Received ➔ Diagnosed ➔ Waiting for Parts ➔ In Progress ➔ Completed ➔ Delivered).
 - **Customer Management**: Maintain detailed records, device histories, and contact information.
 - **Inventory & Parts Management**: Track stock levels, accessories, purchase prices, and receive low-stock alerts.
@@ -53,17 +56,20 @@ This project is built using a modern, scalable JavaScript/TypeScript stack:
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 Make sure you have [Node.js](https://nodejs.org/) (v18+) and `npm` installed.
 
 ### Installation
 
 1. **Clone the repository**
+
    ```sh
    git clone https://github.com/srujan66619/rk-repair-labs.git
    cd rk-repair-labs
    ```
 
 2. **Install dependencies**
+
    ```sh
    npm install
    ```
@@ -78,7 +84,9 @@ Make sure you have [Node.js](https://nodejs.org/) (v18+) and `npm` installed.
    The application will be available at `http://localhost:5173`.
 
 ### Build for Production
+
 To generate a production-ready bundle:
+
 ```sh
 npm run build
 ```
@@ -100,8 +108,6 @@ src/
 ```
 
 ---
-
-
 
 <div align="center">
   <i>Designed & Developed for RK Repair Labs</i>

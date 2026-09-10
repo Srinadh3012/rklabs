@@ -1,8 +1,27 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { Wrench, Clock, CheckCircle2, IndianRupee, Boxes, AlertTriangle, TrendingUp, Users } from "lucide-react";
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import {
+  Wrench,
+  Clock,
+  CheckCircle2,
+  IndianRupee,
+  Boxes,
+  AlertTriangle,
+  TrendingUp,
+  Users,
+} from "lucide-react";
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
 
 import { inr } from "@/lib/format";
 
@@ -34,7 +53,21 @@ async function fetchStats(): Promise<Stats> {
 
 import { cn } from "@/lib/utils";
 
-function StatCard({ icon: Icon, label, value, sub, color, delay = 0 }: { icon: any; label: string; value: string; sub?: string; color: string; delay?: number }) {
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  sub,
+  color,
+  delay = 0,
+}: {
+  icon: any;
+  label: string;
+  value: string;
+  sub?: string;
+  color: string;
+  delay?: number;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -42,14 +75,22 @@ function StatCard({ icon: Icon, label, value, sub, color, delay = 0 }: { icon: a
       transition={{ duration: 0.35, delay }}
       className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#0f172a]/80 backdrop-blur-xl p-5 shadow-lg transition-all hover:bg-white/5 hover:border-white/20 hover:-translate-y-0.5 hover:shadow-xl"
     >
-      <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full opacity-10 blur-2xl transition-opacity group-hover:opacity-20" style={{ background: color }} />
+      <div
+        className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full opacity-10 blur-2xl transition-opacity group-hover:opacity-20"
+        style={{ background: color }}
+      />
       <div className="flex items-start justify-between">
         <div>
-          <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400">{label}</div>
+          <div className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
+            {label}
+          </div>
           <div className="mt-2 text-2xl font-bold tracking-tight text-slate-100">{value}</div>
           {sub && <div className="mt-1 text-xs font-medium text-slate-500">{sub}</div>}
         </div>
-        <div className="grid h-9 w-9 place-items-center rounded-xl border border-white/5 bg-white/[0.02]" style={{ color: color }}>
+        <div
+          className="grid h-9 w-9 place-items-center rounded-xl border border-white/5 bg-white/[0.02]"
+          style={{ color: color }}
+        >
           <Icon className="h-4 w-4" />
         </div>
       </div>
@@ -64,7 +105,12 @@ function Dashboard() {
     queryFn: async () => {
       const { user } = await meFn();
       if (!user) return null;
-      return user as { approval_status: string; requested_role: string | null; approved_at: string | null; rejection_reason: string | null } | null;
+      return user as {
+        approval_status: string;
+        requested_role: string | null;
+        approved_at: string | null;
+        rejection_reason: string | null;
+      } | null;
     },
   });
 
@@ -83,7 +129,7 @@ function Dashboard() {
           <div className="mt-1 text-xs opacity-90">
             {me.approval_status === "pending"
               ? "Your access is limited until an admin reviews your account."
-              : me.rejection_reason ?? "Please contact the shop admin."}
+              : (me.rejection_reason ?? "Please contact the shop admin.")}
           </div>
         </div>
       )}
@@ -96,44 +142,163 @@ function Dashboard() {
         </div>
       )}
 
-
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard icon={Wrench} label="Today's Repairs" value={isLoading ? "—" : String(data?.todayRepairs ?? 0)} color="#22d3ee" delay={0} />
-        <StatCard icon={Clock} label="Pending" value={isLoading ? "—" : String(data?.pending ?? 0)} sub="In workflow" color="#f59e0b" delay={0.05} />
-        <StatCard icon={CheckCircle2} label="Delivered" value={isLoading ? "—" : String(data?.delivered ?? 0)} color="#10b981" delay={0.1} />
-        <StatCard icon={IndianRupee} label="Total Revenue" value={isLoading ? "—" : inr(data?.revenue ?? 0)} color="#a855f7" delay={0.15} />
-        <StatCard icon={TrendingUp} label="This Month" value={isLoading ? "—" : inr(data?.monthRevenue ?? 0)} color="#ec4899" delay={0.2} />
-        <StatCard icon={Boxes} label="Inventory Value" value={isLoading ? "—" : inr(data?.inventoryValue ?? 0)} color="#3b82f6" delay={0.25} />
-        <StatCard icon={AlertTriangle} label="Low Stock" value={isLoading ? "—" : String(data?.lowStock ?? 0)} sub="Items below threshold" color="#ef4444" delay={0.3} />
-        <StatCard icon={Users} label="Customers" value={isLoading ? "—" : String(data?.customers ?? 0)} color="#06b6d4" delay={0.35} />
+        <StatCard
+          icon={Wrench}
+          label="Today's Repairs"
+          value={isLoading ? "—" : String(data?.todayRepairs ?? 0)}
+          color="#22d3ee"
+          delay={0}
+        />
+        <StatCard
+          icon={Clock}
+          label="Pending"
+          value={isLoading ? "—" : String(data?.pending ?? 0)}
+          sub="In workflow"
+          color="#f59e0b"
+          delay={0.05}
+        />
+        <StatCard
+          icon={CheckCircle2}
+          label="Delivered"
+          value={isLoading ? "—" : String(data?.delivered ?? 0)}
+          color="#10b981"
+          delay={0.1}
+        />
+        <StatCard
+          icon={IndianRupee}
+          label="Total Revenue"
+          value={isLoading ? "—" : inr(data?.revenue ?? 0)}
+          color="#a855f7"
+          delay={0.15}
+        />
+        <StatCard
+          icon={TrendingUp}
+          label="This Month"
+          value={isLoading ? "—" : inr(data?.monthRevenue ?? 0)}
+          color="#ec4899"
+          delay={0.2}
+        />
+        <StatCard
+          icon={Boxes}
+          label="Inventory Value"
+          value={isLoading ? "—" : inr(data?.inventoryValue ?? 0)}
+          color="#3b82f6"
+          delay={0.25}
+        />
+        <StatCard
+          icon={AlertTriangle}
+          label="Low Stock"
+          value={isLoading ? "—" : String(data?.lowStock ?? 0)}
+          sub="Items below threshold"
+          color="#ef4444"
+          delay={0.3}
+        />
+        <StatCard
+          icon={Users}
+          label="Customers"
+          value={isLoading ? "—" : String(data?.customers ?? 0)}
+          color="#06b6d4"
+          delay={0.35}
+        />
       </div>
 
       <section aria-labelledby="dashboard-charts" className="grid gap-6 lg:grid-cols-2">
-        <h2 id="dashboard-charts" className="sr-only">Performance charts</h2>
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="rounded-2xl border border-white/10 bg-[#0f172a]/80 backdrop-blur-xl p-6 shadow-lg">
-          <h3 className="mb-6 text-sm font-semibold tracking-tight text-slate-200">Repairs · Last 7 days</h3>
+        <h2 id="dashboard-charts" className="sr-only">
+          Performance charts
+        </h2>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="rounded-2xl border border-white/10 bg-[#0f172a]/80 backdrop-blur-xl p-6 shadow-lg"
+        >
+          <h3 className="mb-6 text-sm font-semibold tracking-tight text-slate-200">
+            Repairs · Last 7 days
+          </h3>
           <div className="h-[280px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={data?.dailyRepairs ?? []}>
-                <CartesianGrid stroke="rgba(255,255,255,0.05)" strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="day" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} dy={10} />
-                <YAxis stroke="#64748b" fontSize={11} allowDecimals={false} tickLine={false} axisLine={false} dx={-10} />
-                <Tooltip contentStyle={{ background: "#0f172a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "#f8fafc" }} itemStyle={{ color: "#22d3ee" }} />
-                <Line type="monotone" dataKey="count" stroke="#22d3ee" strokeWidth={3} dot={{ fill: "#0f172a", stroke: "#22d3ee", strokeWidth: 2, r: 4 }} activeDot={{ r: 6, fill: "#22d3ee" }} />
+                <CartesianGrid
+                  stroke="rgba(255,255,255,0.05)"
+                  strokeDasharray="3 3"
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="day"
+                  stroke="#64748b"
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                  dy={10}
+                />
+                <YAxis
+                  stroke="#64748b"
+                  fontSize={11}
+                  allowDecimals={false}
+                  tickLine={false}
+                  axisLine={false}
+                  dx={-10}
+                />
+                <Tooltip
+                  contentStyle={{
+                    background: "#0f172a",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: 8,
+                    color: "#f8fafc",
+                  }}
+                  itemStyle={{ color: "#22d3ee" }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="count"
+                  stroke="#22d3ee"
+                  strokeWidth={3}
+                  dot={{ fill: "#0f172a", stroke: "#22d3ee", strokeWidth: 2, r: 4 }}
+                  activeDot={{ r: 6, fill: "#22d3ee" }}
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="rounded-2xl border border-white/10 bg-[#0f172a]/80 backdrop-blur-xl p-6 shadow-lg">
-          <h3 className="mb-6 text-sm font-semibold tracking-tight text-slate-200">Monthly Sales · Last 6 months</h3>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="rounded-2xl border border-white/10 bg-[#0f172a]/80 backdrop-blur-xl p-6 shadow-lg"
+        >
+          <h3 className="mb-6 text-sm font-semibold tracking-tight text-slate-200">
+            Monthly Sales · Last 6 months
+          </h3>
           <div className="h-[280px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data?.monthlySales ?? []}>
-                <CartesianGrid stroke="rgba(255,255,255,0.05)" strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="month" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} dy={10} />
+                <CartesianGrid
+                  stroke="rgba(255,255,255,0.05)"
+                  strokeDasharray="3 3"
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="month"
+                  stroke="#64748b"
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                  dy={10}
+                />
                 <YAxis stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} dx={-10} />
-                <Tooltip contentStyle={{ background: "#0f172a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "#f8fafc" }} itemStyle={{ color: "#a855f7" }} formatter={(v: any) => inr(Number(v))} cursor={{ fill: "rgba(255,255,255,0.05)" }} />
+                <Tooltip
+                  contentStyle={{
+                    background: "#0f172a",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: 8,
+                    color: "#f8fafc",
+                  }}
+                  itemStyle={{ color: "#a855f7" }}
+                  formatter={(v: any) => inr(Number(v))}
+                  cursor={{ fill: "rgba(255,255,255,0.05)" }}
+                />
                 <Bar dataKey="total" fill="#a855f7" radius={[4, 4, 0, 0]} maxBarSize={40} />
               </BarChart>
             </ResponsiveContainer>

@@ -8,17 +8,21 @@ export type CalEvent = {
   durationMinutes?: number; // default 45
 };
 
-function pad(n: number) { return String(n).padStart(2, "0"); }
+function pad(n: number) {
+  return String(n).padStart(2, "0");
+}
 
 /** UTC compact format: YYYYMMDDTHHMMSSZ */
 export function toIcsUtc(d: Date) {
   return (
     d.getUTCFullYear().toString() +
     pad(d.getUTCMonth() + 1) +
-    pad(d.getUTCDate()) + "T" +
+    pad(d.getUTCDate()) +
+    "T" +
     pad(d.getUTCHours()) +
     pad(d.getUTCMinutes()) +
-    pad(d.getUTCSeconds()) + "Z"
+    pad(d.getUTCSeconds()) +
+    "Z"
   );
 }
 
@@ -69,7 +73,12 @@ export function downloadIcs(ev: CalEvent, filename = "appointment.ics") {
   const blob = new Blob([buildIcs(ev)], { type: "text/calendar;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url; a.download = filename;
-  document.body.appendChild(a); a.click();
-  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 500);
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    URL.revokeObjectURL(url);
+    a.remove();
+  }, 500);
 }

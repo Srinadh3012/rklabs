@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { purchaseorderRepository } from "@/repositories/purchaseorder.repository";
 
 export class PurchaseOrderService {

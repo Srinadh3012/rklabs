@@ -18,13 +18,17 @@ export const invoices = pgTable("invoices", {
   payment_status: varchar("payment_status", { length: 50 }).notNull(), // "paid" | "unpaid" | "partial"
   payment_method: varchar("payment_method", { length: 50 }),
   notes: text("notes"),
-  owner_id: uuid("owner_id").references(() => profiles.id).notNull(),
+  owner_id: uuid("owner_id")
+    .references(() => profiles.id)
+    .notNull(),
   created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const invoiceItems = pgTable("invoice_items", {
   id: uuid("id").primaryKey().defaultRandom(),
-  invoice_id: uuid("invoice_id").references(() => invoices.id).notNull(),
+  invoice_id: uuid("invoice_id")
+    .references(() => invoices.id)
+    .notNull(),
   description: text("description").notNull(),
   quantity: integer("quantity").notNull(),
   unit_price: real("unit_price").notNull(),
@@ -35,19 +39,27 @@ export const invoiceItems = pgTable("invoice_items", {
 export const purchaseOrders = pgTable("purchase_orders", {
   id: uuid("id").primaryKey().defaultRandom(),
   po_number: varchar("po_number", { length: 50 }).notNull(),
-  supplier_id: uuid("supplier_id").references(() => suppliers.id).notNull(),
+  supplier_id: uuid("supplier_id")
+    .references(() => suppliers.id)
+    .notNull(),
   total_amount: real("total_amount").notNull(),
   notes: text("notes"),
   status: varchar("status", { length: 50 }).notNull(), // "pending" | "received" | "cancelled"
   received_at: timestamp("received_at"),
-  owner_id: uuid("owner_id").references(() => profiles.id).notNull(),
+  owner_id: uuid("owner_id")
+    .references(() => profiles.id)
+    .notNull(),
   created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const purchaseOrderItems = pgTable("purchase_order_items", {
   id: uuid("id").primaryKey().defaultRandom(),
-  po_id: uuid("po_id").references(() => purchaseOrders.id).notNull(),
-  item_id: uuid("item_id").references(() => inventory.id).notNull(),
+  po_id: uuid("po_id")
+    .references(() => purchaseOrders.id)
+    .notNull(),
+  item_id: uuid("item_id")
+    .references(() => inventory.id)
+    .notNull(),
   quantity: integer("quantity").notNull(),
   unit_cost: real("unit_cost").notNull(),
   total_cost: real("total_cost").notNull(),
@@ -60,6 +72,8 @@ export const expenses = pgTable("expenses", {
   amount: real("amount").notNull(),
   expense_date: timestamp("expense_date").notNull(),
   date: varchar("date", { length: 50 }),
-  owner_id: uuid("owner_id").references(() => profiles.id).notNull(),
+  owner_id: uuid("owner_id")
+    .references(() => profiles.id)
+    .notNull(),
   created_at: timestamp("created_at").defaultNow().notNull(),
 });

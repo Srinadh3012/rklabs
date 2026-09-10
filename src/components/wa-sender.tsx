@@ -3,7 +3,13 @@ import { createContext, useCallback, useContext, useState, type ReactNode } from
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { MessageCircle, X, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -29,18 +35,24 @@ export function useWaSender() {
   return c;
 }
 
-async function insertLog(req: WaSendRequest, status: "sent" | "blocked" | "cancelled" | "no_phone", error?: string) {
+async function insertLog(
+  req: WaSendRequest,
+  status: "sent" | "blocked" | "cancelled" | "no_phone",
+  error?: string,
+) {
   try {
-    await logWaMessageFn({ data: {
-      repair_id: req.repairId ?? null,
-      invoice_id: req.invoiceId ?? null,
-      kind: req.kind,
-      recipient_name: req.recipientName ?? null,
-      phone: req.phone ?? null,
-      message: req.message,
-      status,
-      error: error ?? null,
-    }});
+    await logWaMessageFn({
+      data: {
+        repair_id: req.repairId ?? null,
+        invoice_id: req.invoiceId ?? null,
+        kind: req.kind,
+        recipient_name: req.recipientName ?? null,
+        phone: req.phone ?? null,
+        message: req.message,
+        status,
+        error: error ?? null,
+      },
+    });
   } catch {
     /* swallow */
   }
@@ -56,7 +68,10 @@ export function WaSenderProvider({ children }: { children: ReactNode }) {
     setText(r.message);
   }, []);
 
-  function close() { setReq(null); setText(""); }
+  function close() {
+    setReq(null);
+    setText("");
+  }
 
   function refreshLogs() {
     if (req?.repairId) qc.invalidateQueries({ queryKey: ["wa-logs", req.repairId] });
@@ -84,7 +99,10 @@ export function WaSenderProvider({ children }: { children: ReactNode }) {
       await insertLog(finalReq, "sent");
       toast.success(`WhatsApp opened for ${finalReq.recipientName ?? digits}`, {
         description: "If WhatsApp Web doesn't load, try the fallback link.",
-        action: { label: "Try wa.me", onClick: () => window.open(fallbackUrl, "_blank", "noopener") },
+        action: {
+          label: "Try wa.me",
+          onClick: () => window.open(fallbackUrl, "_blank", "noopener"),
+        },
         duration: 8000,
       });
     } else {
@@ -119,7 +137,12 @@ export function WaSenderProvider({ children }: { children: ReactNode }) {
   return (
     <WaCtx.Provider value={{ send }}>
       {children}
-      <Dialog open={!!req} onOpenChange={(v) => { if (!v) cancel(); }}>
+      <Dialog
+        open={!!req}
+        onOpenChange={(v) => {
+          if (!v) cancel();
+        }}
+      >
         <DialogContent className="glass-strong max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -144,11 +167,20 @@ export function WaSenderProvider({ children }: { children: ReactNode }) {
               <div className="space-y-1.5">
                 <Label className="flex items-center justify-between">
                   <span>Message preview (editable)</span>
-                  <button type="button" onClick={copyMsg} className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
+                  <button
+                    type="button"
+                    onClick={copyMsg}
+                    className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                  >
                     <Copy className="h-3 w-3" /> Copy
                   </button>
                 </Label>
-                <Textarea value={text} onChange={(e) => setText(e.target.value)} rows={10} className="font-mono text-xs leading-relaxed" />
+                <Textarea
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  rows={10}
+                  className="font-mono text-xs leading-relaxed"
+                />
                 <div className="text-[11px] text-muted-foreground">
                   Verify greeting, ticket number and amounts before opening WhatsApp.
                 </div>

@@ -261,9 +261,7 @@ Browser ──▶ your app backend ──▶ Neon Function                      
 // src/index.ts — verify the caller before doing any work
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
-const jwks = createRemoteJWKSet(
-  new URL(`${process.env.AUTH_BASE_URL}/api/auth/jwks`),
-);
+const jwks = createRemoteJWKSet(new URL(`${process.env.AUTH_BASE_URL}/api/auth/jwks`));
 
 export default {
   async fetch(request: Request) {
@@ -434,10 +432,9 @@ async function poll() {
   if (polling || clients.size === 0) return; // guard overlap; no clients → no query → compute can scale to zero
   polling = true;
   try {
-    const { rows } = await pool.query(
-      "SELECT id, payload FROM events WHERE id > $1 ORDER BY id",
-      [lastId],
-    );
+    const { rows } = await pool.query("SELECT id, payload FROM events WHERE id > $1 ORDER BY id", [
+      lastId,
+    ]);
     for (const { id, payload } of rows) {
       lastId = id;
       for (const socket of clients) {
@@ -454,7 +451,9 @@ async function poll() {
 // Seed from the latest id so a fresh isolate sends only new rows, not the whole table, then poll.
 pool
   .query("SELECT coalesce(max(id), 0)::text AS id FROM events")
-  .then((seed) => { lastId = seed.rows[0].id; })
+  .then((seed) => {
+    lastId = seed.rows[0].id;
+  })
   .catch((err) => console.error("[seed]", err))
   .finally(() => setInterval(poll, 1000).unref?.());
 ```
@@ -494,10 +493,7 @@ listener.on("notification", (msg) => {
 
 // Broadcast by NOTIFYing through the pool — every isolate's listener fires.
 function broadcast(event: unknown) {
-  return pool.query("SELECT pg_notify($1, $2)", [
-    CHANNEL,
-    JSON.stringify(event),
-  ]);
+  return pool.query("SELECT pg_notify($1, $2)", [CHANNEL, JSON.stringify(event)]);
 }
 ```
 
@@ -525,8 +521,7 @@ async function connect() {
     /* apply the event */
   };
   ws.onclose = () => {
-    if (!closed)
-      timer = setTimeout(connect, Math.min(1000 * 2 ** retry++, 15000));
+    if (!closed) timer = setTimeout(connect, Math.min(1000 * 2 ** retry++, 15000));
   };
   ws.onerror = () => ws.close(); // let onclose drive the retry
 }
@@ -549,10 +544,7 @@ export default {
       new ReadableStream<Uint8Array>({
         start(controller) {
           controller.enqueue(encoder.encode("data: hello\n\n"));
-          t = setInterval(
-            () => controller.enqueue(encoder.encode(": ping\n\n")),
-            25_000,
-          );
+          t = setInterval(() => controller.enqueue(encoder.encode(": ping\n\n")), 25_000);
         },
         cancel() {
           clearInterval(t); // fires when the client disconnects

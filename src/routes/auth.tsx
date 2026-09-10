@@ -18,7 +18,11 @@ export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: "Sign in — RK Repair Labs" },
-      { name: "description", content: "Sign in to the RK Repair Labs shop dashboard, or create a customer or employee account to get started." },
+      {
+        name: "description",
+        content:
+          "Sign in to the RK Repair Labs shop dashboard, or create a customer or employee account to get started.",
+      },
     ],
   }),
   component: AuthPage,
@@ -85,16 +89,26 @@ function AuthPage() {
 
   return (
     <div className="relative min-h-screen overflow-hidden">
-      <div className="pointer-events-none absolute inset-0" style={{ background: "var(--gradient-glow)" }} />
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{ background: "var(--gradient-glow)" }}
+      />
       <main className="container relative mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-12">
         <Link to="/" className="mb-8 flex items-center gap-2">
-          <div className="grid h-9 w-9 place-items-center rounded-lg" style={{ background: "var(--gradient-primary)" }}>
+          <div
+            className="grid h-9 w-9 place-items-center rounded-lg"
+            style={{ background: "var(--gradient-primary)" }}
+          >
             <Wrench className="h-5 w-5 text-background" />
           </div>
           <span className="text-lg font-bold">RK Labs</span>
         </Link>
 
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="glass-strong rounded-2xl p-8 shadow-[var(--shadow-glow)]">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-strong rounded-2xl p-8 shadow-[var(--shadow-glow)]"
+        >
           <h1 className="text-2xl font-bold">Repair Management System</h1>
           <p className="mt-1 text-sm text-muted-foreground">Sign in to your shop dashboard.</p>
 
@@ -106,7 +120,11 @@ function AuthPage() {
                   : "border-red-500/30 bg-red-500/10 text-red-200"
               }`}
             >
-              {stored.status === "pending" ? <Clock className="mt-0.5 h-4 w-4 shrink-0" /> : <XCircle className="mt-0.5 h-4 w-4 shrink-0" />}
+              {stored.status === "pending" ? (
+                <Clock className="mt-0.5 h-4 w-4 shrink-0" />
+              ) : (
+                <XCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              )}
               <div className="flex-1">
                 <div className="font-medium">
                   {stored.status === "pending" ? "Pending admin approval" : "Signup rejected"}
@@ -136,13 +154,30 @@ function AuthPage() {
               <form onSubmit={signIn} className="space-y-4 pt-4">
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                  <Input
+                    id="email"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="pw">Password</Label>
-                  <Input id="pw" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                  <Input
+                    id="pw"
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
                 </div>
-                <Button type="submit" disabled={busy} className="w-full" style={{ background: "var(--gradient-primary)", color: "oklch(0.12 0.02 250)" }}>
+                <Button
+                  type="submit"
+                  disabled={busy}
+                  className="w-full"
+                  style={{ background: "var(--gradient-primary)", color: "oklch(0.12 0.02 250)" }}
+                >
                   {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Sign in
                 </Button>
                 {process.env.NODE_ENV !== "production" && (
@@ -157,7 +192,12 @@ function AuthPage() {
               <form onSubmit={signUp} className="space-y-4 pt-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Full name</Label>
-                  <Input id="name" required value={fullName} onChange={(e) => setFullName(e.target.value)} />
+                  <Input
+                    id="name"
+                    required
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label>I am a</Label>
@@ -180,21 +220,39 @@ function AuthPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email2">Email</Label>
-                  <Input id="email2" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                  <Input
+                    id="email2"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="pw2">Password</Label>
-                  <Input id="pw2" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} />
+                  <Input
+                    id="pw2"
+                    type="password"
+                    required
+                    minLength={8}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
                 </div>
-                <Button type="submit" disabled={busy} className="w-full" style={{ background: "var(--gradient-primary)", color: "oklch(0.12 0.02 250)" }}>
+                <Button
+                  type="submit"
+                  disabled={busy}
+                  className="w-full"
+                  style={{ background: "var(--gradient-primary)", color: "oklch(0.12 0.02 250)" }}
+                >
                   {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Create account
                 </Button>
                 <p className="text-xs text-muted-foreground">
-                  New accounts require admin approval before sign-in. The very first account created on this shop becomes the admin.
+                  New accounts require admin approval before sign-in. The very first account created
+                  on this shop becomes the admin.
                 </p>
               </form>
             </TabsContent>
-
           </Tabs>
         </motion.div>
       </main>

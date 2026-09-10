@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { expenseRepository } from "@/repositories/expense.repository";
 
 export class ExpenseService {

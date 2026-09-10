@@ -15,7 +15,14 @@ export type PdfDataInput = {
   items?: any[];
 };
 
-export async function generatePdfFromHtml({ type, shop, invoice, customer, repair, items }: PdfDataInput): Promise<jsPDF> {
+export async function generatePdfFromHtml({
+  type,
+  shop,
+  invoice,
+  customer,
+  repair,
+  items,
+}: PdfDataInput): Promise<jsPDF> {
   return new Promise(async (resolve, reject) => {
     try {
       // Create a temporary container
@@ -32,20 +39,28 @@ export async function generatePdfFromHtml({ type, shop, invoice, customer, repai
         if (type === "invoice") {
           root.render(
             <InvoiceTemplate
-              shop={shop} invoice={invoice} customer={customer} repair={repair} items={items}
-            />
+              shop={shop}
+              invoice={invoice}
+              customer={customer}
+              repair={repair}
+              items={items}
+            />,
           );
         } else {
           root.render(
             <IntakeReceiptTemplate
-              shop={shop} invoice={invoice} customer={customer} repair={repair} items={items}
-            />
+              shop={shop}
+              invoice={invoice}
+              customer={customer}
+              repair={repair}
+              items={items}
+            />,
           );
         }
       });
 
       // Wait a moment for fonts, SVGs, and QR codes to fully render
-      await new Promise(r => setTimeout(r, 500));
+      await new Promise((r) => setTimeout(r, 500));
 
       const imgData = await toJpeg(container.firstElementChild as HTMLElement, {
         quality: 1.0,

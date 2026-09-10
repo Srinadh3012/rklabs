@@ -65,12 +65,8 @@
           "name": "expenses_owner_id_profiles_id_fk",
           "tableFrom": "expenses",
           "tableTo": "profiles",
-          "columnsFrom": [
-            "owner_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["owner_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -136,12 +132,8 @@
           "name": "invoice_items_invoice_id_invoices_id_fk",
           "tableFrom": "invoice_items",
           "tableTo": "invoices",
-          "columnsFrom": [
-            "invoice_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["invoice_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -255,12 +247,8 @@
           "name": "invoices_customer_id_customers_id_fk",
           "tableFrom": "invoices",
           "tableTo": "customers",
-          "columnsFrom": [
-            "customer_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["customer_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -268,12 +256,8 @@
           "name": "invoices_repair_id_repairs_id_fk",
           "tableFrom": "invoices",
           "tableTo": "repairs",
-          "columnsFrom": [
-            "repair_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["repair_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -281,12 +265,8 @@
           "name": "invoices_owner_id_profiles_id_fk",
           "tableFrom": "invoices",
           "tableTo": "profiles",
-          "columnsFrom": [
-            "owner_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["owner_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -345,12 +325,8 @@
           "name": "purchase_order_items_po_id_purchase_orders_id_fk",
           "tableFrom": "purchase_order_items",
           "tableTo": "purchase_orders",
-          "columnsFrom": [
-            "po_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["po_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -358,12 +334,8 @@
           "name": "purchase_order_items_item_id_inventory_id_fk",
           "tableFrom": "purchase_order_items",
           "tableTo": "inventory",
-          "columnsFrom": [
-            "item_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["item_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -441,12 +413,8 @@
           "name": "purchase_orders_supplier_id_suppliers_id_fk",
           "tableFrom": "purchase_orders",
           "tableTo": "suppliers",
-          "columnsFrom": [
-            "supplier_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["supplier_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -454,12 +422,8 @@
           "name": "purchase_orders_owner_id_profiles_id_fk",
           "tableFrom": "purchase_orders",
           "tableTo": "profiles",
-          "columnsFrom": [
-            "owner_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["owner_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -537,12 +501,8 @@
           "name": "customers_owner_id_profiles_id_fk",
           "tableFrom": "customers",
           "tableTo": "profiles",
-          "columnsFrom": [
-            "owner_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["owner_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -626,12 +586,8 @@
           "name": "suppliers_owner_id_profiles_id_fk",
           "tableFrom": "suppliers",
           "tableTo": "profiles",
-          "columnsFrom": [
-            "owner_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["owner_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -768,9 +724,7 @@
         "profiles_email_unique": {
           "name": "profiles_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},
@@ -864,12 +818,8 @@
           "name": "inventory_owner_id_profiles_id_fk",
           "tableFrom": "inventory",
           "tableTo": "profiles",
-          "columnsFrom": [
-            "owner_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["owner_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -947,12 +897,8 @@
           "name": "stock_movements_item_id_inventory_id_fk",
           "tableFrom": "stock_movements",
           "tableTo": "inventory",
-          "columnsFrom": [
-            "item_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["item_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -960,12 +906,8 @@
           "name": "stock_movements_owner_id_profiles_id_fk",
           "tableFrom": "stock_movements",
           "tableTo": "profiles",
-          "columnsFrom": [
-            "owner_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["owner_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1037,12 +979,8 @@
           "name": "appointments_repair_id_repairs_id_fk",
           "tableFrom": "appointments",
           "tableTo": "repairs",
-          "columnsFrom": [
-            "repair_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["repair_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1050,12 +988,8 @@
           "name": "appointments_owner_id_profiles_id_fk",
           "tableFrom": "appointments",
           "tableTo": "profiles",
-          "columnsFrom": [
-            "owner_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["owner_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1116,12 +1050,8 @@
           "name": "repair_notes_repair_id_repairs_id_fk",
           "tableFrom": "repair_notes",
           "tableTo": "repairs",
-          "columnsFrom": [
-            "repair_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["repair_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1241,12 +1171,8 @@
           "name": "repairs_customer_id_customers_id_fk",
           "tableFrom": "repairs",
           "tableTo": "customers",
-          "columnsFrom": [
-            "customer_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["customer_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1254,12 +1180,8 @@
           "name": "repairs_owner_id_profiles_id_fk",
           "tableFrom": "repairs",
           "tableTo": "profiles",
-          "columnsFrom": [
-            "owner_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["owner_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1325,12 +1247,8 @@
           "name": "notifications_user_id_profiles_id_fk",
           "tableFrom": "notifications",
           "tableTo": "profiles",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -1420,12 +1338,8 @@
           "name": "wa_logs_owner_id_profiles_id_fk",
           "tableFrom": "wa_logs",
           "tableTo": "profiles",
-          "columnsFrom": [
-            "owner_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["owner_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1433,12 +1347,8 @@
           "name": "wa_logs_repair_id_repairs_id_fk",
           "tableFrom": "wa_logs",
           "tableTo": "repairs",
-          "columnsFrom": [
-            "repair_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["repair_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
@@ -1446,12 +1356,8 @@
           "name": "wa_logs_invoice_id_invoices_id_fk",
           "tableFrom": "wa_logs",
           "tableTo": "invoices",
-          "columnsFrom": [
-            "invoice_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["invoice_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }

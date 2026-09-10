@@ -5,7 +5,9 @@ import { invoices } from "./billing";
 
 export const notifications = pgTable("notifications", {
   id: uuid("id").primaryKey().defaultRandom(),
-  user_id: uuid("user_id").references(() => profiles.id).notNull(),
+  user_id: uuid("user_id")
+    .references(() => profiles.id)
+    .notNull(),
   kind: varchar("kind", { length: 50 }).notNull(),
   title: varchar("title", { length: 255 }).notNull(),
   body: text("body"),
@@ -15,7 +17,9 @@ export const notifications = pgTable("notifications", {
 
 export const waLogs = pgTable("wa_logs", {
   id: uuid("id").primaryKey().defaultRandom(),
-  owner_id: uuid("owner_id").references(() => profiles.id).notNull(),
+  owner_id: uuid("owner_id")
+    .references(() => profiles.id)
+    .notNull(),
   repair_id: uuid("repair_id").references(() => repairs.id),
   invoice_id: uuid("invoice_id").references(() => invoices.id),
   kind: varchar("kind", { length: 50 }).notNull(),

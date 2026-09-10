@@ -9,7 +9,9 @@ export const customers = pgTable("customers", {
   email: varchar("email", { length: 255 }),
   address: text("address"),
   notes: text("notes"),
-  owner_id: uuid("owner_id").references(() => profiles.id).notNull(),
+  owner_id: uuid("owner_id")
+    .references(() => profiles.id)
+    .notNull(),
   created_at: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -22,6 +24,8 @@ export const suppliers = pgTable("suppliers", {
   address: text("address"),
   gst_number: varchar("gst_number", { length: 100 }),
   notes: text("notes"),
-  owner_id: uuid("owner_id").references(() => profiles.id).notNull(),
+  owner_id: uuid("owner_id")
+    .references(() => profiles.id)
+    .notNull(),
   created_at: timestamp("created_at").defaultNow().notNull(),
 });
