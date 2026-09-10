@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { getStore } from "@/services/database";
+import { customerService } from "@/services/customer.service";
 import { requireAuth } from "../auth.server";
 
 const customerSchema = z.object({
@@ -14,19 +14,16 @@ const customerSchema = z.object({
 
 export const getCustomersFn = createServerFn({ method: "GET" }).handler(async () => {
   await requireAuth();
-  const store = getStore();
-  return store.customers.list().sort((a, b) => b.created_at.localeCompare(a.created_at));
+  return await customerService.getCustomers();
 });
 
 export const createCustomerFn = createServerFn({ method: "POST" })
   .validator((data) => customerSchema.parse(data))
   .handler(async ({ data }) => {
     const { session } = await requireAuth();
-    const store = getStore();
-    const customer = store.customers.create({
+    const customer = await customerService.createCustomer({
       ...data,
       owner_id: session.userId,
-      created_at: new Date().toISOString(),
     });
     return { id: customer.id };
   });
@@ -35,8 +32,7 @@ export const updateCustomerFn = createServerFn({ method: "POST" })
   .validator((data) => z.object({ id: z.string(), data: customerSchema.partial() }).parse(data))
   .handler(async ({ data }) => {
     await requireAuth();
-    const store = getStore();
-    store.customers.update(data.id, data.data);
+    await customerService.updateCustomer(data.id, data.data);
     return { success: true };
   });
 
@@ -44,7 +40,6 @@ export const deleteCustomerFn = createServerFn({ method: "POST" })
   .validator((id: string) => z.string().parse(id))
   .handler(async ({ data }) => {
     await requireAuth();
-    const store = getStore();
-    store.customers.delete(data);
+    await customerService.deleteCustomer(data);
     return { success: true };
   });

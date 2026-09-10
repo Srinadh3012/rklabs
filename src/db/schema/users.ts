@@ -1,0 +1,22 @@
+import { pgTable, uuid, varchar, text, boolean, timestamp, integer, jsonb } from "drizzle-orm/pg-core";
+
+export const profiles = pgTable("profiles", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  full_name: varchar("full_name", { length: 255 }).notNull(),
+  role: varchar("role", { length: 50 }).notNull().default("user"),
+  requested_role: varchar("requested_role", { length: 50 }).notNull().default("user"),
+  approval_status: varchar("approval_status", { length: 50 }).notNull().default("pending"),
+  approved_at: timestamp("approved_at"),
+  approved_by: uuid("approved_by"),
+  rejection_reason: text("rejection_reason"),
+  shop_name: varchar("shop_name", { length: 255 }),
+  shop_address: text("shop_address"),
+  shop_phone: varchar("shop_phone", { length: 50 }),
+  shop_logo: text("shop_logo"),
+  gst_number: varchar("gst_number", { length: 100 }),
+  gst_percent: integer("gst_percent"),
+  wa_templates: jsonb("wa_templates"),
+  auto_reminders: boolean("auto_reminders").default(false),
+  created_at: timestamp("created_at").defaultNow().notNull(),
+});
