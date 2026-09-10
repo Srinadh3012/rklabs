@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { repairs } from "@/db/schema";
+import { repairs, repairNotes, appointments, waLogs } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 
 export class RepairRepository {
@@ -23,8 +23,41 @@ export class RepairRepository {
   }
 
   async delete(id: string) {
+    // Also delete associated notes and appointments first to avoid FK constraints
+    await db.delete(repairNotes).where(eq(repairNotes.repair_id, id));
+    await db.delete(appointments).where(eq(appointments.repair_id, id));
     await db.delete(repairs).where(eq(repairs.id, id));
     return true;
+  }
+
+  // --- Repair Notes ---
+  async getNotes(repairId: string) {
+    return await db.select().from(repairNotes).where(eq(repairNotes.repair_id, repairId)).orderBy(desc(repairNotes.created_at));
+  }
+
+  async createNote(data: any) {
+    const result = await db.insert(repairNotes).values(data).returning();
+    return result[0];
+  }
+
+  async updateNote(id: string, data: any) {
+    const result = await db.update(repairNotes).set(data).where(eq(repairNotes.id, id)).returning();
+    return result[0];
+  }
+
+  // --- Appointments ---
+  async getAppointments(repairId: string) {
+    return await db.select().from(appointments).where(eq(appointments.repair_id, repairId)).orderBy(desc(appointments.created_at));
+  }
+
+  async createAppointment(data: any) {
+    const result = await db.insert(appointments).values(data).returning();
+    return result[0];
+  }
+
+  // --- WA Logs ---
+  async getWaLogs(repairId: string) {
+    return await db.select().from(waLogs).where(eq(waLogs.repair_id, repairId)).orderBy(desc(waLogs.created_at));
   }
 }
 

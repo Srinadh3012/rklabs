@@ -1,7 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { getStore } from "@/services/database";
 import { requireAuth } from "../auth.server";
+import { invoiceService } from "@/services/invoice.service";
+import { inventoryService } from "@/services/inventory.service";
+import { purchaseorderService } from "@/services/purchaseorder.service";
+import { expenseRepository } from "@/repositories/expense.repository";
+import { repairService } from "@/services/repair.service";
+import { customerService } from "@/services/customer.service";
 
 // === PNL DATA ===
 export const getPnlDataFn = createServerFn({ method: "POST" })
@@ -15,26 +20,32 @@ export const getPnlDataFn = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     await requireAuth();
-    const store = getStore();
 
-    const fromDate = data.from;
-    const toDate = data.to;
+    const fromDate = new Date(data.from);
+    const toDate = new Date(data.to);
 
-    const invoices = store.invoices.query((i) => i.created_at >= fromDate && i.created_at < toDate);
-    const inventory = store.inventory.list();
-    const purchaseOrders = store.purchaseOrders.query(
-      (p) => p.status === "received" && p.received_at! >= fromDate && p.received_at! < toDate,
+    const allInvoices = await invoiceService.getInvoices();
+    const invoices = allInvoices.filter((i) => i.created_at && new Date(i.created_at) >= fromDate && new Date(i.created_at) < toDate);
+    
+    const inventory = await inventoryService.getInventoryItems();
+    
+    const allPurchaseOrders = await purchaseorderService.getPurchaseOrders();
+    const purchaseOrders = allPurchaseOrders.filter(
+      (p) => p.status === "received" && p.received_at && new Date(p.received_at) >= fromDate && new Date(p.received_at) < toDate,
     );
-    const expenses = store.expenses.query(
-      (e) =>
-        (e.expense_date || e.date || "") >= data.from.slice(0, 10) &&
-        (e.expense_date || e.date || "") < data.to.slice(0, 10),
-    );
+    
+    const allExpenses = await expenseRepository.getAll();
+    const expenses = allExpenses.filter((e) => {
+      const eDate = e.expense_date || e.date;
+      if (!eDate) return false;
+      const d = new Date(eDate);
+      return d >= fromDate && d < toDate;
+    });
 
-    const invoiceIds = invoices.map((i) => i.id);
     let invoiceItems = [] as any[];
-    if (invoiceIds.length > 0) {
-      invoiceItems = store.invoiceItems.query((i) => invoiceIds.includes(i.invoice_id));
+    for (const inv of invoices) {
+      const items = await invoiceService.getInvoiceItems(inv.id);
+      invoiceItems.push(...items);
     }
 
     return {
@@ -44,7 +55,7 @@ export const getPnlDataFn = createServerFn({ method: "POST" })
         payment_status: i.payment_status,
         gst_amount: i.tax_amount,
         discount: i.discount,
-        created_at: i.created_at,
+        created_at: i.created_at ? new Date(i.created_at).toISOString() : null,
       })),
       invoiceItems: invoiceItems.map((i) => ({
         id: i.id,
@@ -68,7 +79,7 @@ export const getPnlDataFn = createServerFn({ method: "POST" })
         category: e.category,
         description: e.description,
         amount: e.amount,
-        expense_date: e.expense_date || e.date || "",
+        expense_date: e.expense_date ? new Date(e.expense_date).toISOString() : (e.date || ""),
       })),
     };
   });
@@ -87,16 +98,14 @@ export const createExpenseFn = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const { session } = await requireAuth();
-    const store = getStore();
 
-    const expense = store.expenses.create({
+    const expense = await expenseRepository.create({
       category: data.category,
       description: data.description || "",
       amount: data.amount,
       date: data.expense_date,
-      expense_date: data.expense_date,
+      expense_date: new Date(data.expense_date),
       owner_id: session.userId,
-      created_at: new Date().toISOString(),
     });
     return { id: expense.id };
   });
@@ -105,8 +114,7 @@ export const deleteExpenseFn = createServerFn({ method: "POST" })
   .validator((id: string) => z.string().parse(id))
   .handler(async ({ data }) => {
     await requireAuth();
-    const store = getStore();
-    store.expenses.delete(data);
+    await expenseRepository.delete(data);
     return { success: true };
   });
 
@@ -121,13 +129,17 @@ export const getReportsDataFn = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     await requireAuth();
-    const store = getStore();
 
-    const fromDate = data.from;
+    const fromDate = new Date(data.from);
 
-    const invoices = store.invoices.query((i) => i.created_at >= fromDate);
-    const repairs = store.repairs.query((r) => r.created_at >= fromDate);
-    const customers = store.customers.list().map((c) => ({ id: c.id, name: c.name }));
+    const allInvoices = await invoiceService.getInvoices();
+    const invoices = allInvoices.filter((i) => i.created_at && new Date(i.created_at) >= fromDate);
+    
+    const allRepairs = await repairService.getRepairs();
+    const repairs = allRepairs.filter((r) => r.created_at && new Date(r.created_at) >= fromDate);
+    
+    const allCustomers = await customerService.getCustomers();
+    const customers = allCustomers.map((c) => ({ id: c.id, name: c.name }));
 
     return {
       invoices: invoices.map((i) => ({
@@ -138,7 +150,7 @@ export const getReportsDataFn = createServerFn({ method: "POST" })
         gst_amount: i.tax_amount,
         payment_status: i.payment_status,
         payment_mode: i.payment_method,
-        created_at: i.created_at,
+        created_at: i.created_at ? new Date(i.created_at).toISOString() : null,
       })),
       repairs: repairs.map((r) => ({
         id: r.id,

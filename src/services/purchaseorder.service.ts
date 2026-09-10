@@ -21,6 +21,19 @@ export class PurchaseOrderService {
   async deletePurchaseOrder(id: string) {
     return await purchaseorderRepository.delete(id);
   }
+
+  // Items
+  async getPurchaseOrderItems(poId: string) {
+    return await purchaseorderRepository.getItemsByPoId(poId);
+  }
+
+  async createPurchaseOrderItem(data: any) {
+    return await purchaseorderRepository.createItem(data);
+  }
+
+  async deletePurchaseOrderItem(id: string) {
+    return await purchaseorderRepository.deleteItem(id);
+  }
 }
 
 export const purchaseorderService = new PurchaseOrderService();

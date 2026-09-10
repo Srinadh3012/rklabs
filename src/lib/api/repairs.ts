@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { getStore } from "@/services/database";
+import { repairService } from "@/services/repair.service";
 import { requireAuth } from "../auth.server";
 
 const repairSchema = z.object({
@@ -12,41 +12,44 @@ const repairSchema = z.object({
   issue: z.string().min(1),
   status: z.string(),
   technician_notes: z.string().nullable().optional(),
-  estimated_completion: z.string().nullable().optional(),
+  estimated_completion: z.string().nullable().optional().transform(v => v ? new Date(v) : null),
   estimated_cost: z.number().nullable().optional(),
-  appointment_at: z.string().nullable().optional(),
+  appointment_at: z.string().nullable().optional().transform(v => v ? new Date(v) : null),
   ticket_no: z.string().optional(),
 });
 
 export const getRepairsFn = createServerFn({ method: "GET" }).handler(async () => {
   await requireAuth();
-  const store = getStore();
-  return store.repairs.list().sort((a, b) => b.created_at.localeCompare(a.created_at));
+  return await repairService.getRepairs();
 });
 
 export const createRepairFn = createServerFn({ method: "POST" })
   .validator((data) => repairSchema.parse(data))
   .handler(async ({ data }) => {
     const { session } = await requireAuth();
-    const store = getStore();
     const ticket_no = data.ticket_no || `TK-${Date.now().toString().slice(-6)}`;
-    const now = new Date().toISOString();
-    const repair = store.repairs.create({
+    
+    // Type conversion: Drizzle wants Date objects for timestamps
+    const repairData: any = {
       ...data,
       ticket_no,
       owner_id: session.userId,
-      created_at: now,
-    });
-    return { id: repair.id, ticket_no, created_at: now };
+    };
+
+    const repair = await repairService.createRepair(repairData);
+    return { id: repair.id, ticket_no, created_at: repair.created_at };
   });
 
 export const updateRepairFn = createServerFn({ method: "POST" })
   .validator((data) => z.object({ id: z.string(), data: repairSchema.partial() }).parse(data))
   .handler(async ({ data }) => {
     await requireAuth();
-    const store = getStore();
-    store.repairs.update(data.id, data.data);
-    const repair = store.repairs.getById(data.id);
+    
+    // Convert date strings to Date objects if present
+    const updateData: any = { ...data.data };
+    
+    await repairService.updateRepair(data.id, updateData);
+    const repair = await repairService.getRepairById(data.id);
     return { id: data.id, ticket_no: repair?.ticket_no };
   });
 
@@ -54,13 +57,7 @@ export const deleteRepairFn = createServerFn({ method: "POST" })
   .validator((id: string) => z.string().parse(id))
   .handler(async ({ data }) => {
     await requireAuth();
-    const store = getStore();
-    store.repairs.delete(data);
-    // Delete related notes
-    const notes = store.repairNotes.query((n) => n.repair_id === data);
-    for (const note of notes) {
-      store.repairNotes.delete(note.id);
-    }
+    await repairService.deleteRepair(data);
     return { success: true };
   });
 
@@ -69,10 +66,7 @@ export const getRepairNotesFn = createServerFn({ method: "GET" })
   .validator((data) => z.object({ repair_id: z.string() }).parse(data))
   .handler(async ({ data }) => {
     await requireAuth();
-    const store = getStore();
-    return store.repairNotes
-      .query((n) => n.repair_id === data.repair_id)
-      .sort((a, b) => b.created_at.localeCompare(a.created_at));
+    return await repairService.getRepairNotes(data.repair_id);
   });
 
 export const createRepairNoteFn = createServerFn({ method: "POST" })
@@ -83,11 +77,9 @@ export const createRepairNoteFn = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     await requireAuth();
-    const store = getStore();
-    const note = store.repairNotes.create({
+    const note = await repairService.createRepairNote({
       ...data,
       task_done: false,
-      created_at: new Date().toISOString(),
     });
     return { id: note.id };
   });
@@ -96,8 +88,7 @@ export const updateRepairNoteFn = createServerFn({ method: "POST" })
   .validator((data) => z.object({ id: z.string(), data: z.any() }).parse(data))
   .handler(async ({ data }) => {
     await requireAuth();
-    const store = getStore();
-    store.repairNotes.update(data.id, data.data);
+    await repairService.updateRepairNote(data.id, data.data);
     return { success: true };
   });
 
@@ -106,18 +97,15 @@ export const getAppointmentEventsFn = createServerFn({ method: "GET" })
   .validator((data) => z.object({ repair_id: z.string() }).parse(data))
   .handler(async ({ data }) => {
     await requireAuth();
-    const store = getStore();
-    return store.appointments
-      .query((a) => a.repair_id === data.repair_id)
-      .sort((a, b) => b.created_at.localeCompare(a.created_at))
-      .map((e) => ({
-        id: e.id,
-        action: e.title,
-        previous_at: e.start_time,
-        new_at: e.end_time,
-        note: e.notes,
-        created_at: e.created_at,
-      }));
+    const events = await repairService.getAppointmentEvents(data.repair_id);
+    return events.map((e: any) => ({
+      id: e.id,
+      action: e.title,
+      previous_at: e.start_time ? new Date(e.start_time).toISOString() : null,
+      new_at: e.end_time ? new Date(e.end_time).toISOString() : null,
+      note: e.notes,
+      created_at: e.created_at ? new Date(e.created_at).toISOString() : null,
+    }));
   });
 
 export const createAppointmentEventFn = createServerFn({ method: "POST" })
@@ -133,14 +121,12 @@ export const createAppointmentEventFn = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const { session } = await requireAuth();
-    const store = getStore();
-    const apt = store.appointments.create({
+    const apt = await repairService.createAppointmentEvent({
       repair_id: data.repair_id,
       title: data.action,
-      start_time: data.previous_at || "",
-      end_time: data.new_at || "",
+      start_time: data.previous_at ? new Date(data.previous_at) : new Date(),
+      end_time: data.new_at ? new Date(data.new_at) : new Date(),
       owner_id: session.userId,
-      created_at: new Date().toISOString(),
     });
     return { id: apt.id };
   });
@@ -149,8 +135,5 @@ export const getWaLogsFn = createServerFn({ method: "GET" })
   .validator((data) => z.object({ repair_id: z.string() }).parse(data))
   .handler(async ({ data }) => {
     await requireAuth();
-    const store = getStore();
-    return store.waLogs
-      .query((w) => w.repair_id === data.repair_id)
-      .sort((a, b) => b.created_at.localeCompare(a.created_at));
+    return await repairService.getWaLogs(data.repair_id);
   });

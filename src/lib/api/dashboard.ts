@@ -1,10 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
-import { getStore } from "@/services/database";
+import { repairService } from "@/services/repair.service";
+import { invoiceService } from "@/services/invoice.service";
+import { inventoryService } from "@/services/inventory.service";
+import { customerService } from "@/services/customer.service";
 import { requireAuth } from "../auth.server";
 
 export const getDashboardStatsFn = createServerFn({ method: "GET" }).handler(async () => {
   await requireAuth();
-  const store = getStore();
 
   const startToday = new Date();
   startToday.setHours(0, 0, 0, 0);
@@ -12,12 +14,12 @@ export const getDashboardStatsFn = createServerFn({ method: "GET" }).handler(asy
   startMonth.setDate(1);
   startMonth.setHours(0, 0, 0, 0);
 
-  const reps = store.repairs.list();
-  const invs = store.invoices.list();
-  const its = store.inventory.list();
-  const custsCount = store.customers.count();
+  const reps = await repairService.getRepairs();
+  const invs = await invoiceService.getInvoices();
+  const its = await inventoryService.getInventoryItems();
+  const custs = await customerService.getCustomers();
 
-  const todayRepairs = reps.filter((r) => new Date(r.created_at) >= startToday).length;
+  const todayRepairs = reps.filter((r) => r.created_at && new Date(r.created_at) >= startToday).length;
   const pending = reps.filter((r) => !["delivered", "cancelled"].includes(r.status)).length;
   const delivered = reps.filter((r) => r.status === "delivered").length;
 
@@ -25,7 +27,7 @@ export const getDashboardStatsFn = createServerFn({ method: "GET" }).handler(asy
     .filter((i) => i.payment_status === "paid")
     .reduce((s, i) => s + Number(i.total), 0);
   const monthRevenue = invs
-    .filter((i) => new Date(i.created_at) >= startMonth && i.payment_status === "paid")
+    .filter((i) => i.created_at && new Date(i.created_at) >= startMonth && i.payment_status === "paid")
     .reduce((s, i) => s + Number(i.total), 0);
 
   const inventoryValue = its.reduce(
@@ -44,6 +46,7 @@ export const getDashboardStatsFn = createServerFn({ method: "GET" }).handler(asy
     const next = new Date(d);
     next.setDate(next.getDate() + 1);
     const count = reps.filter((r) => {
+      if (!r.created_at) return false;
       const t = new Date(r.created_at);
       return t >= d && t < next;
     }).length;
@@ -60,6 +63,7 @@ export const getDashboardStatsFn = createServerFn({ method: "GET" }).handler(asy
     next.setMonth(next.getMonth() + 1);
     const total = invs
       .filter((i) => {
+        if (!i.created_at) return false;
         const t = new Date(i.created_at);
         return t >= d && t < next;
       })
@@ -75,7 +79,7 @@ export const getDashboardStatsFn = createServerFn({ method: "GET" }).handler(asy
     monthRevenue,
     inventoryValue,
     lowStock,
-    customers: custsCount,
+    customers: custs.length,
     dailyRepairs,
     monthlySales,
   };

@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { inventory } from "@/db/schema";
+import { inventory, stockMovements } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 
 export class InventoryRepository {
@@ -23,8 +23,23 @@ export class InventoryRepository {
   }
 
   async delete(id: string) {
+    await db.delete(stockMovements).where(eq(stockMovements.item_id, id));
     await db.delete(inventory).where(eq(inventory.id, id));
     return true;
+  }
+
+  // Stock Movements
+  async getStockMovements() {
+    return await db.select().from(stockMovements).orderBy(desc(stockMovements.created_at));
+  }
+
+  async getStockMovementsByItemId(itemId: string) {
+    return await db.select().from(stockMovements).where(eq(stockMovements.item_id, itemId)).orderBy(desc(stockMovements.created_at));
+  }
+
+  async createStockMovement(data: any) {
+    const result = await db.insert(stockMovements).values(data).returning();
+    return result[0];
   }
 }
 

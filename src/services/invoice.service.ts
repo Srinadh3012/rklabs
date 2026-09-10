@@ -21,6 +21,15 @@ export class InvoiceService {
   async deleteInvoice(id: string) {
     return await invoiceRepository.delete(id);
   }
+
+  // Invoice Items
+  async getInvoiceItems(invoiceId: string) {
+    return await invoiceRepository.getItemsByInvoiceId(invoiceId);
+  }
+
+  async createInvoiceItem(data: any) {
+    return await invoiceRepository.createItem(data);
+  }
 }
 
 export const invoiceService = new InvoiceService();

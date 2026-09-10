@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { getStore } from "@/services/database";
+import { userService } from "@/services/user.service";
 import { createSession, clearSession, getSession } from "../auth.server";
 
 const loginSchema = z.object({
@@ -18,15 +18,11 @@ const registerSchema = z.object({
 export const loginFn = createServerFn({ method: "POST" })
   .validator((data) => loginSchema.parse(data))
   .handler(async ({ data }) => {
-    const store = getStore();
-
     // Find profile by email
-    const profiles = store.profiles.query((p) => p.email === data.email);
-    if (profiles.length === 0) {
+    const user = await userService.getProfileByEmail(data.email);
+    if (!user) {
       throw new Error("User profile not found. Please register first.");
     }
-
-    const user = profiles[0];
 
     // Mock password check — in development, accept "Password123!" or any password
     // In production, this will be replaced with real auth
@@ -54,25 +50,23 @@ export const loginFn = createServerFn({ method: "POST" })
 export const registerFn = createServerFn({ method: "POST" })
   .validator((data) => registerSchema.parse(data))
   .handler(async ({ data }) => {
-    const store = getStore();
-
     // Check for existing profile
-    const existing = store.profiles.query((p) => p.email === data.email);
-    if (existing.length > 0) {
+    const existing = await userService.getProfileByEmail(data.email);
+    if (existing) {
       throw new Error("Email already registered");
     }
 
     // First user becomes admin
-    const isFirstUser = store.profiles.count() === 0;
+    const profileCount = await userService.countProfiles();
+    const isFirstUser = profileCount === 0;
     const role = isFirstUser ? "admin" : "user";
 
-    const profile = store.profiles.create({
+    const profile = await userService.createProfile({
       email: data.email,
       full_name: data.fullName,
       requested_role: data.requestedRole,
       approval_status: isFirstUser ? "approved" : "pending",
       role,
-      created_at: new Date().toISOString(),
     });
 
     if (isFirstUser) {
@@ -96,8 +90,7 @@ export const meFn = createServerFn({ method: "GET" }).handler(async () => {
   const session = await getSession();
   if (!session) return { user: null };
 
-  const store = getStore();
-  const user = store.profiles.getById(session.userId);
+  const user = await userService.getProfileById(session.userId);
   if (!user) return { user: null };
 
   return {

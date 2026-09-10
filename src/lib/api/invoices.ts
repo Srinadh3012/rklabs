@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { getStore } from "@/services/database";
+import { invoiceService } from "@/services/invoice.service";
 import { requireAuth } from "../auth.server";
 
 const invoiceSchema = z.object({
@@ -20,30 +20,25 @@ const invoiceSchema = z.object({
 
 export const getInvoicesFn = createServerFn({ method: "GET" }).handler(async () => {
   await requireAuth();
-  const store = getStore();
-  return store.invoices.list().sort((a, b) => b.created_at.localeCompare(a.created_at));
+  return await invoiceService.getInvoices();
 });
 
 export const createInvoiceFn = createServerFn({ method: "POST" })
   .validator((data) => invoiceSchema.parse(data))
   .handler(async ({ data }) => {
     const { session } = await requireAuth();
-    const store = getStore();
-    const now = new Date().toISOString();
-    const invoice = store.invoices.create({
+    const invoice = await invoiceService.createInvoice({
       ...data,
       owner_id: session.userId,
-      created_at: now,
     });
-    return { id: invoice.id, invoice_no: data.invoice_no, created_at: now };
+    return { id: invoice.id, invoice_no: data.invoice_no, created_at: invoice.created_at };
   });
 
 export const updateInvoiceFn = createServerFn({ method: "POST" })
   .validator((data) => z.object({ id: z.string(), data: z.any() }).parse(data))
   .handler(async ({ data }) => {
     await requireAuth();
-    const store = getStore();
-    store.invoices.update(data.id, data.data);
+    await invoiceService.updateInvoice(data.id, data.data);
     return { success: true };
   });
 
@@ -51,13 +46,7 @@ export const deleteInvoiceFn = createServerFn({ method: "POST" })
   .validator((id: string) => z.string().parse(id))
   .handler(async ({ data }) => {
     await requireAuth();
-    const store = getStore();
-    store.invoices.delete(data);
-    // Delete related items
-    const items = store.invoiceItems.query((i) => i.invoice_id === data);
-    for (const item of items) {
-      store.invoiceItems.delete(item.id);
-    }
+    await invoiceService.deleteInvoice(data);
     return { success: true };
   });
 
@@ -66,8 +55,7 @@ export const getInvoiceItemsFn = createServerFn({ method: "GET" })
   .validator((data) => z.object({ invoice_id: z.string() }).parse(data))
   .handler(async ({ data }) => {
     await requireAuth();
-    const store = getStore();
-    return store.invoiceItems.query((i) => i.invoice_id === data.invoice_id);
+    return await invoiceService.getInvoiceItems(data.invoice_id);
   });
 
 export const createInvoiceItemsFn = createServerFn({ method: "POST" })
@@ -86,12 +74,8 @@ export const createInvoiceItemsFn = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     await requireAuth();
-    const store = getStore();
     for (const item of data) {
-      store.invoiceItems.create({
-        ...item,
-        created_at: new Date().toISOString(),
-      });
+      await invoiceService.createInvoiceItem(item);
     }
     return { success: true };
   });

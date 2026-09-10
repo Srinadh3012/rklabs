@@ -2,24 +2,37 @@
 import { inventoryRepository } from "@/repositories/inventory.repository";
 
 export class InventoryService {
-  async getInventorys() {
+  async getInventoryItems() {
     return await inventoryRepository.getAll();
   }
 
-  async getInventoryById(id: string) {
+  async getInventoryItemById(id: string) {
     return await inventoryRepository.getById(id);
   }
 
-  async createInventory(data: any) {
+  async createInventoryItem(data: any) {
     return await inventoryRepository.create(data);
   }
 
-  async updateInventory(id: string, data: any) {
+  async updateInventoryItem(id: string, data: any) {
     return await inventoryRepository.update(id, data);
   }
 
-  async deleteInventory(id: string) {
+  async deleteInventoryItem(id: string) {
     return await inventoryRepository.delete(id);
+  }
+
+  // Stock Movements
+  async getStockMovements() {
+    return await inventoryRepository.getStockMovements();
+  }
+
+  async getStockMovementsByItemId(itemId: string) {
+    return await inventoryRepository.getStockMovementsByItemId(itemId);
+  }
+
+  async createStockMovement(data: any) {
+    return await inventoryRepository.createStockMovement(data);
   }
 }
 

@@ -1,13 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { getStore } from "@/services/database";
+import { userService } from "@/services/user.service";
 import { requireAuth } from "../auth.server";
 
 export const getProfileFn = createServerFn({ method: "GET" }).handler(async () => {
   const { session } = await requireAuth();
-  const store = getStore();
 
-  const profile = store.profiles.getById(session.userId);
+  const profile = await userService.getProfileById(session.userId);
   if (!profile) throw new Error("Profile not found");
 
   return {
@@ -33,8 +32,6 @@ export const updateProfileFn = createServerFn({ method: "POST" })
   .validator((data) => z.any().parse(data))
   .handler(async ({ data }) => {
     const { session } = await requireAuth();
-    const store = getStore();
-
-    store.profiles.update(session.userId, data);
+    await userService.updateProfile(session.userId, data);
     return { success: true };
   });

@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { getStore } from "@/services/database";
+import { waRepository } from "@/repositories/wa.repository";
 import { requireAuth } from "../auth.server";
 
 export const logWaMessageFn = createServerFn({ method: "POST" })
@@ -20,12 +20,10 @@ export const logWaMessageFn = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const { session } = await requireAuth();
-    const store = getStore();
 
-    store.waLogs.create({
+    await waRepository.create({
       owner_id: session.userId,
       ...data,
-      created_at: new Date().toISOString(),
     });
 
     return { success: true };
@@ -42,16 +40,8 @@ export const getWaLogsFn = createServerFn({ method: "GET" })
   )
   .handler(async ({ data }) => {
     const { session } = await requireAuth();
-    const store = getStore();
 
-    let logs = store.waLogs.query((w) => w.owner_id === session.userId);
+    const logs = await waRepository.getLogs(session.userId, data.repair_id, data.invoice_id);
 
-    if (data.repair_id) {
-      logs = logs.filter((w) => w.repair_id === data.repair_id);
-    }
-    if (data.invoice_id) {
-      logs = logs.filter((w) => w.invoice_id === data.invoice_id);
-    }
-
-    return logs.sort((a, b) => b.created_at.localeCompare(a.created_at));
+    return logs;
   });

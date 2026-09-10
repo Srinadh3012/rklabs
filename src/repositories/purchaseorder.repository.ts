@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { purchaseOrders } from "@/db/schema";
+import { purchaseOrders, purchaseOrderItems } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 
 export class PurchaseOrderRepository {
@@ -27,7 +27,23 @@ export class PurchaseOrderRepository {
   }
 
   async delete(id: string) {
+    await db.delete(purchaseOrderItems).where(eq(purchaseOrderItems.po_id, id));
     await db.delete(purchaseOrders).where(eq(purchaseOrders.id, id));
+    return true;
+  }
+
+  // Items
+  async getItemsByPoId(poId: string) {
+    return await db.select().from(purchaseOrderItems).where(eq(purchaseOrderItems.po_id, poId));
+  }
+
+  async createItem(data: any) {
+    const result = await db.insert(purchaseOrderItems).values(data).returning();
+    return result[0];
+  }
+
+  async deleteItem(id: string) {
+    await db.delete(purchaseOrderItems).where(eq(purchaseOrderItems.id, id));
     return true;
   }
 }
