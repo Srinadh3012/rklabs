@@ -1,6 +1,6 @@
 import { getCookie, setCookie, deleteCookie } from "@tanstack/react-start/server";
 import jwt from "jsonwebtoken";
-import { getStore } from "@/services/database";
+import { userService } from "@/services/user.service";
 
 const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret_please_change_in_production";
 const COOKIE_NAME = "auth_session";
@@ -44,8 +44,7 @@ export async function requireAuth() {
     throw new Error("Unauthorized");
   }
 
-  const store = getStore();
-  const user = store.profiles.getById(session.userId);
+  const user = await userService.getProfileById(session.userId);
   if (!user) {
     throw new Error("User not found");
   }
