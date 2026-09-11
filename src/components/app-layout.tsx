@@ -31,9 +31,9 @@ import { meFn, logoutFn } from "@/lib/api/auth";
 import { getNotificationsFn, markNotificationsReadFn } from "@/lib/api/notifications";
 
 const NAV = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/customers", label: "Customers", icon: Users },
-  { to: "/repairs", label: "Repairs", icon: Wrench },
+  { to: "/management/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/staff/customers", label: "Customers", icon: Users },
+  { to: "/staff/repairs", label: "Repairs", icon: Wrench },
   { to: "/inventory", label: "Inventory", icon: Boxes },
   { to: "/suppliers", label: "Suppliers", icon: Truck },
   { to: "/billing", label: "Billing", icon: Receipt },

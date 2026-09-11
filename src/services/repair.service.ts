@@ -2,8 +2,8 @@
 import { repairRepository } from "@/repositories/repair.repository";
 
 export class RepairService {
-  async getRepairs() {
-    return await repairRepository.getAll();
+  async getRepairs(filters?: { customerId?: string; technicianId?: string }) {
+    return await repairRepository.getAll(filters);
   }
 
   async getRepairById(id: string) {

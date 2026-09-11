@@ -12,6 +12,11 @@ export class CustomerRepository {
     return result[0] || null;
   }
 
+  async getByProfileId(profileId: string) {
+    const result = await db.select().from(customers).where(eq(customers.profile_id, profileId));
+    return result[0] || null;
+  }
+
   async create(data: any) {
     const result = await db.insert(customers).values(data).returning();
     return result[0];

@@ -273,6 +273,14 @@ export function PublicLayout({ children }: { children: ReactNode }) {
       <PublicHeader />
       <main className="flex-1 w-full flex flex-col">{children}</main>
       <PublicFooter />
+      <a
+        href="https://wa.me/917729066619"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 left-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg shadow-[#25D366]/30 transition-transform hover:scale-110"
+      >
+        <MessageCircle className="h-7 w-7" />
+      </a>
     </div>
   );
 }

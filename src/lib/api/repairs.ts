@@ -18,21 +18,42 @@ const repairSchema = z.object({
   ticket_no: z.string().optional(),
 });
 
+import { customerService } from "@/services/customer.service";
+
 export const getRepairsFn = createServerFn({ method: "GET" }).handler(async () => {
-  await requireAuth();
+  const { session, user } = await requireAuth();
+  
+  if (user.role === "customer") {
+    const customer = await customerService.getCustomerByProfileId(user.id);
+    if (!customer) return [];
+    return await repairService.getRepairs({ customerId: customer.id });
+  }
+  
+  if (user.role === "technician") {
+    return await repairService.getRepairs({ technicianId: user.id });
+  }
+  
   return await repairService.getRepairs();
 });
 
 export const createRepairFn = createServerFn({ method: "POST" })
   .validator((data) => repairSchema.parse(data))
   .handler(async ({ data }) => {
-    const { session } = await requireAuth();
+    const { session, user } = await requireAuth();
     const ticket_no = data.ticket_no || `TK-${Date.now().toString().slice(-6)}`;
     
-    // Type conversion: Drizzle wants Date objects for timestamps
+    let assignedCustomerId = data.customer_id;
+    if (user.role === "customer") {
+      const customer = await customerService.getCustomerByProfileId(user.id);
+      if (customer) {
+        assignedCustomerId = customer.id;
+      }
+    }
+
     const repairData: any = {
       ...data,
       ticket_no,
+      customer_id: assignedCustomerId,
       owner_id: session.userId,
     };
 

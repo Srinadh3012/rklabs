@@ -20,6 +20,7 @@ export const repairs = pgTable("repairs", {
   owner_id: uuid("owner_id")
     .references(() => profiles.id)
     .notNull(),
+  technician_id: uuid("technician_id").references(() => profiles.id),
   created_at: timestamp("created_at").defaultNow().notNull(),
 });
 

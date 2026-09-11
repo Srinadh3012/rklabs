@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate, Link, Navigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Wrench, Loader2, Clock, XCircle } from "lucide-react";
+import { Wrench, Loader2, Clock, XCircle, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 
 import { useAuth } from "@/hooks/use-auth";
@@ -37,6 +37,7 @@ function AuthPage() {
   const [fullName, setFullName] = useState("");
   const [requestedRole, setRequestedRole] = useState<"customer" | "employee">("customer");
   const [stored, setStored] = useState<StoredStatus | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     try {
@@ -57,10 +58,18 @@ function AuthPage() {
     e.preventDefault();
     setBusy(true);
     try {
-      await loginFn({ data: { email, password } });
+      const result = await loginFn({ data: { email, password } });
       setBusy(false);
       toast.success("Welcome back");
-      window.location.href = "/dashboard";
+      
+      const role = result.user?.role || "user";
+      if (role === "admin") {
+        window.location.href = "/admin";
+      } else if (role === "employee" || role === "technician") {
+        window.location.href = "/technician/dashboard";
+      } else {
+        window.location.href = "/customer/dashboard";
+      }
     } catch (error: any) {
       setBusy(false);
       return toast.error(error.message || "Invalid credentials");
@@ -164,13 +173,23 @@ function AuthPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="pw">Password</Label>
-                  <Input
-                    id="pw"
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
+                  <div className="relative">
+                    <Input
+                      id="pw"
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                 </div>
                 <Button
                   type="submit"
@@ -230,14 +249,24 @@ function AuthPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="pw2">Password</Label>
-                  <Input
-                    id="pw2"
-                    type="password"
-                    required
-                    minLength={8}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
+                  <div className="relative">
+                    <Input
+                      id="pw2"
+                      type={showPassword ? "text" : "password"}
+                      required
+                      minLength={8}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                 </div>
                 <Button
                   type="submit"

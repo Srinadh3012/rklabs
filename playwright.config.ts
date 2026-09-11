@@ -13,16 +13,23 @@ export default defineConfig({
   use: {
     baseURL: process.env.TEST_BASE_URL || 'https://rklabs-inventory-mgmt.vercel.app',
     trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
   },
 
   projects: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: 'Google Chrome',
+      use: { 
+        ...devices['Desktop Chrome'],
+        channel: 'chrome' // Use system Chrome because playwright install timed out
+      },
     },
     {
       name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
+      use: { 
+        ...devices['Pixel 5'],
+        channel: 'chrome'
+      },
     },
   ],
 });

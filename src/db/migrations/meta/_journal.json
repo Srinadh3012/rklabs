@@ -8,6 +8,13 @@
       "when": 1789050013303,
       "tag": "0000_skinny_adam_warlock",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789058428498,
+      "tag": "0001_moaning_patriot",
+      "breakpoints": true
     }
   ]
 }

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/_public/contact")({
   component: Contact,
@@ -13,14 +14,23 @@ export const Route = createFileRoute("/_public/contact")({
 function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Simulate form submission
+    
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get("name") as string;
+    const phone = formData.get("phone") as string;
+    const email = formData.get("email") as string;
+    const issue = formData.get("issue") as string;
+    
+    const body = `Name: ${name}\nPhone: ${phone}\nEmail: ${email}\n\nIssue:\n${issue}`;
+    window.location.href = `mailto:srujansinhaparasa@gmail.com?subject=New Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(body)}`;
+    
     setTimeout(() => {
       setIsSubmitting(false);
-      alert("Thanks for your message! We will get back to you shortly.");
-    }, 1000);
+      toast.success("Message application opened!");
+    }, 500);
   };
 
   return (
@@ -156,6 +166,7 @@ function Contact() {
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-300">Your Name</label>
                     <Input
+                      name="name"
                       required
                       placeholder="John Doe"
                       className="bg-[#020617] border-white/10 h-12 text-white"
@@ -165,6 +176,7 @@ function Contact() {
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-300">Phone Number</label>
                     <Input
+                      name="phone"
                       required
                       type="tel"
                       placeholder="+91 XXXXX XXXXX"
@@ -177,6 +189,7 @@ function Contact() {
                       Email Address (Optional)
                     </label>
                     <Input
+                      name="email"
                       type="email"
                       placeholder="john@example.com"
                       className="bg-[#020617] border-white/10 h-12 text-white"
@@ -186,6 +199,7 @@ function Contact() {
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-slate-300">Device & Issue</label>
                     <Textarea
+                      name="issue"
                       required
                       placeholder="E.g. MacBook Pro M1 - Screen cracked"
                       className="bg-[#020617] border-white/10 min-h-[120px] resize-y text-white"
@@ -210,7 +224,7 @@ function Contact() {
                 <div className="mt-8 pt-8 border-t border-white/10 text-center">
                   <p className="text-slate-400 text-sm mb-4">Or reach us instantly via WhatsApp</p>
                   <a
-                    href="https://wa.me/919666984949"
+                    href="https://wa.me/917729066619"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 bg-[#25D366] text-white px-6 py-3 rounded-xl font-bold hover:bg-[#20bd5a] transition-colors"

@@ -10,6 +10,10 @@ export class CustomerService {
     return await customerRepository.getById(id);
   }
 
+  async getCustomerByProfileId(profileId: string) {
+    return await customerRepository.getByProfileId(profileId);
+  }
+
   async createCustomer(data: any) {
     return await customerRepository.create(data);
   }

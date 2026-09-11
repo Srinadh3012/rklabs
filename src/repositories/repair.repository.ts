@@ -3,8 +3,17 @@ import { repairs, repairNotes, appointments, waLogs } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 
 export class RepairRepository {
-  async getAll() {
-    return await db.select().from(repairs).orderBy(desc(repairs.created_at));
+  async getAll(filters?: { customerId?: string; technicianId?: string }) {
+    let query = db.select().from(repairs).$dynamic();
+    
+    if (filters?.customerId) {
+      query = query.where(eq(repairs.customer_id, filters.customerId));
+    }
+    if (filters?.technicianId) {
+      query = query.where(eq(repairs.technician_id, filters.technicianId));
+    }
+    
+    return await query.orderBy(desc(repairs.created_at));
   }
 
   async getById(id: string) {

@@ -38,7 +38,7 @@ export async function getSession(): Promise<SessionPayload | null> {
   }
 }
 
-export async function requireAuth() {
+export async function requireAuth(allowedRoles?: string[]) {
   const session = await getSession();
   if (!session) {
     throw new Error("Unauthorized");
@@ -47,6 +47,12 @@ export async function requireAuth() {
   const user = await userService.getProfileById(session.userId);
   if (!user) {
     throw new Error("User not found");
+  }
+
+  if (allowedRoles && allowedRoles.length > 0) {
+    if (!allowedRoles.includes(user.role)) {
+      throw new Error(`Forbidden: Role ${user.role} is not authorized.`);
+    }
   }
 
   return { session, user };

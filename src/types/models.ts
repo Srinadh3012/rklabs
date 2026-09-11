@@ -32,6 +32,7 @@ export interface Customer {
   address?: string | null;
   notes?: string | null;
   owner_id: string;
+  profile_id?: string | null;
   created_at: string;
 }
 
@@ -51,6 +52,7 @@ export interface Repair {
   final_cost?: number | null;
   appointment_at?: string | null;
   owner_id: string;
+  technician_id?: string | null;
   created_at: string;
 }
 

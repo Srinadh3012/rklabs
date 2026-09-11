@@ -12,6 +12,7 @@ export const customers = pgTable("customers", {
   owner_id: uuid("owner_id")
     .references(() => profiles.id)
     .notNull(),
+  profile_id: uuid("profile_id").references(() => profiles.id),
   created_at: timestamp("created_at").defaultNow().notNull(),
 });
 

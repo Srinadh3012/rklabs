@@ -9,32 +9,52 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as PublicRouteImport } from './routes/_public'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as CustomerRouteRouteImport } from './routes/customer/route'
+import { Route as FinanceRouteRouteImport } from './routes/finance/route'
+import { Route as InventoryRouteRouteImport } from './routes/inventory/route'
+import { Route as ManagementRouteRouteImport } from './routes/management/route'
+import { Route as ManagerRouteRouteImport } from './routes/manager/route'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as AuthenticatedApprovalsRouteImport } from './routes/_authenticated/approvals'
-import { Route as AuthenticatedBillingRouteImport } from './routes/_authenticated/billing'
-import { Route as AuthenticatedCustomersRouteImport } from './routes/_authenticated/customers'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedInventoryRouteImport } from './routes/_authenticated/inventory'
-import { Route as AuthenticatedPnlRouteImport } from './routes/_authenticated/pnl'
-import { Route as AuthenticatedRepairsRouteImport } from './routes/_authenticated/repairs'
-import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
-import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
-import { Route as AuthenticatedSuppliersRouteImport } from './routes/_authenticated/suppliers'
+import { Route as StaffRouteRouteImport } from './routes/staff/route'
+import { Route as TechnicianRouteRouteImport } from './routes/technician/route'
 import { Route as PublicIndexRouteImport } from './routes/_public.index'
 import { Route as PublicAboutRouteImport } from './routes/_public.about'
 import { Route as PublicContactRouteImport } from './routes/_public.contact'
 import { Route as PublicServicesRouteImport } from './routes/_public.services'
 import { Route as PublicTrackRouteImport } from './routes/_public.track'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
+import { Route as CustomerIndexRouteImport } from './routes/customer/index'
+import { Route as CustomerBookRouteImport } from './routes/customer/book'
+import { Route as CustomerDashboardRouteImport } from './routes/customer/dashboard'
+import { Route as CustomerRepairsRouteImport } from './routes/customer/repairs'
+import { Route as FinanceIndexRouteImport } from './routes/finance/index'
+import { Route as FinanceBillingRouteImport } from './routes/finance/billing'
+import { Route as FinancePnlRouteImport } from './routes/finance/pnl'
+import { Route as InventoryIndexRouteImport } from './routes/inventory/index'
+import { Route as InventoryDashboardRouteImport } from './routes/inventory/dashboard'
+import { Route as InventorySuppliersRouteImport } from './routes/inventory/suppliers'
+import { Route as ManagementIndexRouteImport } from './routes/management/index'
+import { Route as ManagementDashboardRouteImport } from './routes/management/dashboard'
+import { Route as ManagerIndexRouteImport } from './routes/manager/index'
+import { Route as ManagerApprovalsRouteImport } from './routes/manager/approvals'
+import { Route as ManagerReportsRouteImport } from './routes/manager/reports'
+import { Route as StaffCustomersRouteImport } from './routes/staff/customers'
+import { Route as StaffRepairsRouteImport } from './routes/staff/repairs'
+import { Route as TechnicianIndexRouteImport } from './routes/technician/index'
+import { Route as TechnicianDashboardRouteImport } from './routes/technician/dashboard'
+import { Route as TechnicianJobsRouteImport } from './routes/technician/jobs'
 
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PublicRoute = PublicRouteImport.update({
   id: '/_public',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRouteRoute = AdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -42,60 +62,45 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CustomerRouteRoute = CustomerRouteRouteImport.update({
+  id: '/customer',
+  path: '/customer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FinanceRouteRoute = FinanceRouteRouteImport.update({
+  id: '/finance',
+  path: '/finance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InventoryRouteRoute = InventoryRouteRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ManagementRouteRoute = ManagementRouteRouteImport.update({
+  id: '/management',
+  path: '/management',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ManagerRouteRoute = ManagerRouteRouteImport.update({
+  id: '/manager',
+  path: '/manager',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedApprovalsRoute = AuthenticatedApprovalsRouteImport.update({
-  id: '/approvals',
-  path: '/approvals',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const StaffRouteRoute = StaffRouteRouteImport.update({
+  id: '/staff',
+  path: '/staff',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedBillingRoute = AuthenticatedBillingRouteImport.update({
-  id: '/billing',
-  path: '/billing',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedCustomersRoute = AuthenticatedCustomersRouteImport.update({
-  id: '/customers',
-  path: '/customers',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedInventoryRoute = AuthenticatedInventoryRouteImport.update({
-  id: '/inventory',
-  path: '/inventory',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedPnlRoute = AuthenticatedPnlRouteImport.update({
-  id: '/pnl',
-  path: '/pnl',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedRepairsRoute = AuthenticatedRepairsRouteImport.update({
-  id: '/repairs',
-  path: '/repairs',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
-  id: '/reports',
-  path: '/reports',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedSuppliersRoute = AuthenticatedSuppliersRouteImport.update({
-  id: '/suppliers',
-  path: '/suppliers',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const TechnicianRouteRoute = TechnicianRouteRouteImport.update({
+  id: '/technician',
+  path: '/technician',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/',
@@ -122,131 +127,352 @@ const PublicTrackRoute = PublicTrackRouteImport.update({
   path: '/track',
   getParentRoute: () => PublicRoute,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const CustomerIndexRoute = CustomerIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CustomerRouteRoute,
+} as any)
+const CustomerBookRoute = CustomerBookRouteImport.update({
+  id: '/book',
+  path: '/book',
+  getParentRoute: () => CustomerRouteRoute,
+} as any)
+const CustomerDashboardRoute = CustomerDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => CustomerRouteRoute,
+} as any)
+const CustomerRepairsRoute = CustomerRepairsRouteImport.update({
+  id: '/repairs',
+  path: '/repairs',
+  getParentRoute: () => CustomerRouteRoute,
+} as any)
+const FinanceIndexRoute = FinanceIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => FinanceRouteRoute,
+} as any)
+const FinanceBillingRoute = FinanceBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => FinanceRouteRoute,
+} as any)
+const FinancePnlRoute = FinancePnlRouteImport.update({
+  id: '/pnl',
+  path: '/pnl',
+  getParentRoute: () => FinanceRouteRoute,
+} as any)
+const InventoryIndexRoute = InventoryIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => InventoryRouteRoute,
+} as any)
+const InventoryDashboardRoute = InventoryDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => InventoryRouteRoute,
+} as any)
+const InventorySuppliersRoute = InventorySuppliersRouteImport.update({
+  id: '/suppliers',
+  path: '/suppliers',
+  getParentRoute: () => InventoryRouteRoute,
+} as any)
+const ManagementIndexRoute = ManagementIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ManagementRouteRoute,
+} as any)
+const ManagementDashboardRoute = ManagementDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => ManagementRouteRoute,
+} as any)
+const ManagerIndexRoute = ManagerIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ManagerRouteRoute,
+} as any)
+const ManagerApprovalsRoute = ManagerApprovalsRouteImport.update({
+  id: '/approvals',
+  path: '/approvals',
+  getParentRoute: () => ManagerRouteRoute,
+} as any)
+const ManagerReportsRoute = ManagerReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => ManagerRouteRoute,
+} as any)
+const StaffCustomersRoute = StaffCustomersRouteImport.update({
+  id: '/customers',
+  path: '/customers',
+  getParentRoute: () => StaffRouteRoute,
+} as any)
+const StaffRepairsRoute = StaffRepairsRouteImport.update({
+  id: '/repairs',
+  path: '/repairs',
+  getParentRoute: () => StaffRouteRoute,
+} as any)
+const TechnicianIndexRoute = TechnicianIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => TechnicianRouteRoute,
+} as any)
+const TechnicianDashboardRoute = TechnicianDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => TechnicianRouteRoute,
+} as any)
+const TechnicianJobsRoute = TechnicianJobsRouteImport.update({
+  id: '/jobs',
+  path: '/jobs',
+  getParentRoute: () => TechnicianRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
+  '/admin': typeof AdminRouteRouteWithChildren
+  '/customer': typeof CustomerRouteRouteWithChildren
+  '/finance': typeof FinanceRouteRouteWithChildren
+  '/inventory': typeof InventoryRouteRouteWithChildren
+  '/management': typeof ManagementRouteRouteWithChildren
+  '/manager': typeof ManagerRouteRouteWithChildren
+  '/staff': typeof StaffRouteRouteWithChildren
+  '/technician': typeof TechnicianRouteRouteWithChildren
   '/': typeof PublicIndexRoute
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/approvals': typeof AuthenticatedApprovalsRoute
-  '/billing': typeof AuthenticatedBillingRoute
-  '/customers': typeof AuthenticatedCustomersRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
-  '/inventory': typeof AuthenticatedInventoryRoute
-  '/pnl': typeof AuthenticatedPnlRoute
-  '/repairs': typeof AuthenticatedRepairsRoute
-  '/reports': typeof AuthenticatedReportsRoute
-  '/settings': typeof AuthenticatedSettingsRoute
-  '/suppliers': typeof AuthenticatedSuppliersRoute
   '/about': typeof PublicAboutRoute
   '/contact': typeof PublicContactRoute
   '/services': typeof PublicServicesRoute
   '/track': typeof PublicTrackRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/customer/book': typeof CustomerBookRoute
+  '/customer/dashboard': typeof CustomerDashboardRoute
+  '/customer/repairs': typeof CustomerRepairsRoute
+  '/finance/billing': typeof FinanceBillingRoute
+  '/finance/pnl': typeof FinancePnlRoute
+  '/inventory/dashboard': typeof InventoryDashboardRoute
+  '/inventory/suppliers': typeof InventorySuppliersRoute
+  '/management/dashboard': typeof ManagementDashboardRoute
+  '/manager/approvals': typeof ManagerApprovalsRoute
+  '/manager/reports': typeof ManagerReportsRoute
+  '/staff/customers': typeof StaffCustomersRoute
+  '/staff/repairs': typeof StaffRepairsRoute
+  '/technician/dashboard': typeof TechnicianDashboardRoute
+  '/technician/jobs': typeof TechnicianJobsRoute
+  '/admin/': typeof AdminIndexRoute
+  '/customer/': typeof CustomerIndexRoute
+  '/finance/': typeof FinanceIndexRoute
+  '/inventory/': typeof InventoryIndexRoute
+  '/management/': typeof ManagementIndexRoute
+  '/manager/': typeof ManagerIndexRoute
+  '/technician/': typeof TechnicianIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof PublicIndexRoute
+  '/staff': typeof StaffRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/approvals': typeof AuthenticatedApprovalsRoute
-  '/billing': typeof AuthenticatedBillingRoute
-  '/customers': typeof AuthenticatedCustomersRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
-  '/inventory': typeof AuthenticatedInventoryRoute
-  '/pnl': typeof AuthenticatedPnlRoute
-  '/repairs': typeof AuthenticatedRepairsRoute
-  '/reports': typeof AuthenticatedReportsRoute
-  '/settings': typeof AuthenticatedSettingsRoute
-  '/suppliers': typeof AuthenticatedSuppliersRoute
   '/about': typeof PublicAboutRoute
   '/contact': typeof PublicContactRoute
   '/services': typeof PublicServicesRoute
   '/track': typeof PublicTrackRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/customer/book': typeof CustomerBookRoute
+  '/customer/dashboard': typeof CustomerDashboardRoute
+  '/customer/repairs': typeof CustomerRepairsRoute
+  '/finance/billing': typeof FinanceBillingRoute
+  '/finance/pnl': typeof FinancePnlRoute
+  '/inventory/dashboard': typeof InventoryDashboardRoute
+  '/inventory/suppliers': typeof InventorySuppliersRoute
+  '/management/dashboard': typeof ManagementDashboardRoute
+  '/manager/approvals': typeof ManagerApprovalsRoute
+  '/manager/reports': typeof ManagerReportsRoute
+  '/staff/customers': typeof StaffCustomersRoute
+  '/staff/repairs': typeof StaffRepairsRoute
+  '/technician/dashboard': typeof TechnicianDashboardRoute
+  '/technician/jobs': typeof TechnicianJobsRoute
+  '/': typeof PublicIndexRoute
+  '/admin': typeof AdminIndexRoute
+  '/customer': typeof CustomerIndexRoute
+  '/finance': typeof FinanceIndexRoute
+  '/inventory': typeof InventoryIndexRoute
+  '/management': typeof ManagementIndexRoute
+  '/manager': typeof ManagerIndexRoute
+  '/technician': typeof TechnicianIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/admin': typeof AdminRouteRouteWithChildren
+  '/customer': typeof CustomerRouteRouteWithChildren
+  '/finance': typeof FinanceRouteRouteWithChildren
+  '/inventory': typeof InventoryRouteRouteWithChildren
+  '/management': typeof ManagementRouteRouteWithChildren
+  '/manager': typeof ManagerRouteRouteWithChildren
+  '/staff': typeof StaffRouteRouteWithChildren
+  '/technician': typeof TechnicianRouteRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
   '/auth': typeof AuthRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/_authenticated/approvals': typeof AuthenticatedApprovalsRoute
-  '/_authenticated/billing': typeof AuthenticatedBillingRoute
-  '/_authenticated/customers': typeof AuthenticatedCustomersRoute
-  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/inventory': typeof AuthenticatedInventoryRoute
-  '/_authenticated/pnl': typeof AuthenticatedPnlRoute
-  '/_authenticated/repairs': typeof AuthenticatedRepairsRoute
-  '/_authenticated/reports': typeof AuthenticatedReportsRoute
-  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
-  '/_authenticated/suppliers': typeof AuthenticatedSuppliersRoute
   '/_public/about': typeof PublicAboutRoute
   '/_public/contact': typeof PublicContactRoute
   '/_public/services': typeof PublicServicesRoute
   '/_public/track': typeof PublicTrackRoute
+  '/admin/settings': typeof AdminSettingsRoute
+  '/customer/book': typeof CustomerBookRoute
+  '/customer/dashboard': typeof CustomerDashboardRoute
+  '/customer/repairs': typeof CustomerRepairsRoute
+  '/finance/billing': typeof FinanceBillingRoute
+  '/finance/pnl': typeof FinancePnlRoute
+  '/inventory/dashboard': typeof InventoryDashboardRoute
+  '/inventory/suppliers': typeof InventorySuppliersRoute
+  '/management/dashboard': typeof ManagementDashboardRoute
+  '/manager/approvals': typeof ManagerApprovalsRoute
+  '/manager/reports': typeof ManagerReportsRoute
+  '/staff/customers': typeof StaffCustomersRoute
+  '/staff/repairs': typeof StaffRepairsRoute
+  '/technician/dashboard': typeof TechnicianDashboardRoute
+  '/technician/jobs': typeof TechnicianJobsRoute
   '/_public/': typeof PublicIndexRoute
+  '/admin/': typeof AdminIndexRoute
+  '/customer/': typeof CustomerIndexRoute
+  '/finance/': typeof FinanceIndexRoute
+  '/inventory/': typeof InventoryIndexRoute
+  '/management/': typeof ManagementIndexRoute
+  '/manager/': typeof ManagerIndexRoute
+  '/technician/': typeof TechnicianIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/admin'
+    | '/customer'
+    | '/finance'
+    | '/inventory'
+    | '/management'
+    | '/manager'
+    | '/staff'
+    | '/technician'
     | '/'
     | '/auth'
     | '/sitemap.xml'
-    | '/approvals'
-    | '/billing'
-    | '/customers'
-    | '/dashboard'
-    | '/inventory'
-    | '/pnl'
-    | '/repairs'
-    | '/reports'
-    | '/settings'
-    | '/suppliers'
     | '/about'
     | '/contact'
     | '/services'
     | '/track'
+    | '/admin/settings'
+    | '/customer/book'
+    | '/customer/dashboard'
+    | '/customer/repairs'
+    | '/finance/billing'
+    | '/finance/pnl'
+    | '/inventory/dashboard'
+    | '/inventory/suppliers'
+    | '/management/dashboard'
+    | '/manager/approvals'
+    | '/manager/reports'
+    | '/staff/customers'
+    | '/staff/repairs'
+    | '/technician/dashboard'
+    | '/technician/jobs'
+    | '/admin/'
+    | '/customer/'
+    | '/finance/'
+    | '/inventory/'
+    | '/management/'
+    | '/manager/'
+    | '/technician/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
+    | '/staff'
     | '/auth'
     | '/sitemap.xml'
-    | '/approvals'
-    | '/billing'
-    | '/customers'
-    | '/dashboard'
-    | '/inventory'
-    | '/pnl'
-    | '/repairs'
-    | '/reports'
-    | '/settings'
-    | '/suppliers'
     | '/about'
     | '/contact'
     | '/services'
     | '/track'
+    | '/admin/settings'
+    | '/customer/book'
+    | '/customer/dashboard'
+    | '/customer/repairs'
+    | '/finance/billing'
+    | '/finance/pnl'
+    | '/inventory/dashboard'
+    | '/inventory/suppliers'
+    | '/management/dashboard'
+    | '/manager/approvals'
+    | '/manager/reports'
+    | '/staff/customers'
+    | '/staff/repairs'
+    | '/technician/dashboard'
+    | '/technician/jobs'
+    | '/'
+    | '/admin'
+    | '/customer'
+    | '/finance'
+    | '/inventory'
+    | '/management'
+    | '/manager'
+    | '/technician'
   id:
     | '__root__'
-    | '/_authenticated'
+    | '/admin'
+    | '/customer'
+    | '/finance'
+    | '/inventory'
+    | '/management'
+    | '/manager'
+    | '/staff'
+    | '/technician'
     | '/_public'
     | '/auth'
     | '/sitemap.xml'
-    | '/_authenticated/approvals'
-    | '/_authenticated/billing'
-    | '/_authenticated/customers'
-    | '/_authenticated/dashboard'
-    | '/_authenticated/inventory'
-    | '/_authenticated/pnl'
-    | '/_authenticated/repairs'
-    | '/_authenticated/reports'
-    | '/_authenticated/settings'
-    | '/_authenticated/suppliers'
     | '/_public/about'
     | '/_public/contact'
     | '/_public/services'
     | '/_public/track'
+    | '/admin/settings'
+    | '/customer/book'
+    | '/customer/dashboard'
+    | '/customer/repairs'
+    | '/finance/billing'
+    | '/finance/pnl'
+    | '/inventory/dashboard'
+    | '/inventory/suppliers'
+    | '/management/dashboard'
+    | '/manager/approvals'
+    | '/manager/reports'
+    | '/staff/customers'
+    | '/staff/repairs'
+    | '/technician/dashboard'
+    | '/technician/jobs'
     | '/_public/'
+    | '/admin/'
+    | '/customer/'
+    | '/finance/'
+    | '/inventory/'
+    | '/management/'
+    | '/manager/'
+    | '/technician/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
+  CustomerRouteRoute: typeof CustomerRouteRouteWithChildren
+  FinanceRouteRoute: typeof FinanceRouteRouteWithChildren
+  InventoryRouteRoute: typeof InventoryRouteRouteWithChildren
+  ManagementRouteRoute: typeof ManagementRouteRouteWithChildren
+  ManagerRouteRoute: typeof ManagerRouteRouteWithChildren
+  StaffRouteRoute: typeof StaffRouteRouteWithChildren
+  TechnicianRouteRoute: typeof TechnicianRouteRouteWithChildren
   PublicRoute: typeof PublicRouteWithChildren
   AuthRoute: typeof AuthRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -254,18 +480,18 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_public': {
       id: '/_public'
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof PublicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -275,6 +501,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/customer': {
+      id: '/customer'
+      path: '/customer'
+      fullPath: '/customer'
+      preLoaderRoute: typeof CustomerRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/finance': {
+      id: '/finance'
+      path: '/finance'
+      fullPath: '/finance'
+      preLoaderRoute: typeof FinanceRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/inventory': {
+      id: '/inventory'
+      path: '/inventory'
+      fullPath: '/inventory'
+      preLoaderRoute: typeof InventoryRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/management': {
+      id: '/management'
+      path: '/management'
+      fullPath: '/management'
+      preLoaderRoute: typeof ManagementRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/manager': {
+      id: '/manager'
+      path: '/manager'
+      fullPath: '/manager'
+      preLoaderRoute: typeof ManagerRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -282,75 +543,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/approvals': {
-      id: '/_authenticated/approvals'
-      path: '/approvals'
-      fullPath: '/approvals'
-      preLoaderRoute: typeof AuthenticatedApprovalsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/staff': {
+      id: '/staff'
+      path: '/staff'
+      fullPath: '/staff'
+      preLoaderRoute: typeof StaffRouteRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/billing': {
-      id: '/_authenticated/billing'
-      path: '/billing'
-      fullPath: '/billing'
-      preLoaderRoute: typeof AuthenticatedBillingRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/customers': {
-      id: '/_authenticated/customers'
-      path: '/customers'
-      fullPath: '/customers'
-      preLoaderRoute: typeof AuthenticatedCustomersRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/inventory': {
-      id: '/_authenticated/inventory'
-      path: '/inventory'
-      fullPath: '/inventory'
-      preLoaderRoute: typeof AuthenticatedInventoryRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/pnl': {
-      id: '/_authenticated/pnl'
-      path: '/pnl'
-      fullPath: '/pnl'
-      preLoaderRoute: typeof AuthenticatedPnlRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/repairs': {
-      id: '/_authenticated/repairs'
-      path: '/repairs'
-      fullPath: '/repairs'
-      preLoaderRoute: typeof AuthenticatedRepairsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/reports': {
-      id: '/_authenticated/reports'
-      path: '/reports'
-      fullPath: '/reports'
-      preLoaderRoute: typeof AuthenticatedReportsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/settings': {
-      id: '/_authenticated/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/suppliers': {
-      id: '/_authenticated/suppliers'
-      path: '/suppliers'
-      fullPath: '/suppliers'
-      preLoaderRoute: typeof AuthenticatedSuppliersRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/technician': {
+      id: '/technician'
+      path: '/technician'
+      fullPath: '/technician'
+      preLoaderRoute: typeof TechnicianRouteRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_public/': {
       id: '/_public/'
@@ -387,37 +592,286 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicTrackRouteImport
       parentRoute: typeof PublicRoute
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/customer/': {
+      id: '/customer/'
+      path: '/'
+      fullPath: '/customer/'
+      preLoaderRoute: typeof CustomerIndexRouteImport
+      parentRoute: typeof CustomerRouteRoute
+    }
+    '/customer/book': {
+      id: '/customer/book'
+      path: '/book'
+      fullPath: '/customer/book'
+      preLoaderRoute: typeof CustomerBookRouteImport
+      parentRoute: typeof CustomerRouteRoute
+    }
+    '/customer/dashboard': {
+      id: '/customer/dashboard'
+      path: '/dashboard'
+      fullPath: '/customer/dashboard'
+      preLoaderRoute: typeof CustomerDashboardRouteImport
+      parentRoute: typeof CustomerRouteRoute
+    }
+    '/customer/repairs': {
+      id: '/customer/repairs'
+      path: '/repairs'
+      fullPath: '/customer/repairs'
+      preLoaderRoute: typeof CustomerRepairsRouteImport
+      parentRoute: typeof CustomerRouteRoute
+    }
+    '/finance/': {
+      id: '/finance/'
+      path: '/'
+      fullPath: '/finance/'
+      preLoaderRoute: typeof FinanceIndexRouteImport
+      parentRoute: typeof FinanceRouteRoute
+    }
+    '/finance/billing': {
+      id: '/finance/billing'
+      path: '/billing'
+      fullPath: '/finance/billing'
+      preLoaderRoute: typeof FinanceBillingRouteImport
+      parentRoute: typeof FinanceRouteRoute
+    }
+    '/finance/pnl': {
+      id: '/finance/pnl'
+      path: '/pnl'
+      fullPath: '/finance/pnl'
+      preLoaderRoute: typeof FinancePnlRouteImport
+      parentRoute: typeof FinanceRouteRoute
+    }
+    '/inventory/': {
+      id: '/inventory/'
+      path: '/'
+      fullPath: '/inventory/'
+      preLoaderRoute: typeof InventoryIndexRouteImport
+      parentRoute: typeof InventoryRouteRoute
+    }
+    '/inventory/dashboard': {
+      id: '/inventory/dashboard'
+      path: '/dashboard'
+      fullPath: '/inventory/dashboard'
+      preLoaderRoute: typeof InventoryDashboardRouteImport
+      parentRoute: typeof InventoryRouteRoute
+    }
+    '/inventory/suppliers': {
+      id: '/inventory/suppliers'
+      path: '/suppliers'
+      fullPath: '/inventory/suppliers'
+      preLoaderRoute: typeof InventorySuppliersRouteImport
+      parentRoute: typeof InventoryRouteRoute
+    }
+    '/management/': {
+      id: '/management/'
+      path: '/'
+      fullPath: '/management/'
+      preLoaderRoute: typeof ManagementIndexRouteImport
+      parentRoute: typeof ManagementRouteRoute
+    }
+    '/management/dashboard': {
+      id: '/management/dashboard'
+      path: '/dashboard'
+      fullPath: '/management/dashboard'
+      preLoaderRoute: typeof ManagementDashboardRouteImport
+      parentRoute: typeof ManagementRouteRoute
+    }
+    '/manager/': {
+      id: '/manager/'
+      path: '/'
+      fullPath: '/manager/'
+      preLoaderRoute: typeof ManagerIndexRouteImport
+      parentRoute: typeof ManagerRouteRoute
+    }
+    '/manager/approvals': {
+      id: '/manager/approvals'
+      path: '/approvals'
+      fullPath: '/manager/approvals'
+      preLoaderRoute: typeof ManagerApprovalsRouteImport
+      parentRoute: typeof ManagerRouteRoute
+    }
+    '/manager/reports': {
+      id: '/manager/reports'
+      path: '/reports'
+      fullPath: '/manager/reports'
+      preLoaderRoute: typeof ManagerReportsRouteImport
+      parentRoute: typeof ManagerRouteRoute
+    }
+    '/staff/customers': {
+      id: '/staff/customers'
+      path: '/customers'
+      fullPath: '/staff/customers'
+      preLoaderRoute: typeof StaffCustomersRouteImport
+      parentRoute: typeof StaffRouteRoute
+    }
+    '/staff/repairs': {
+      id: '/staff/repairs'
+      path: '/repairs'
+      fullPath: '/staff/repairs'
+      preLoaderRoute: typeof StaffRepairsRouteImport
+      parentRoute: typeof StaffRouteRoute
+    }
+    '/technician/': {
+      id: '/technician/'
+      path: '/'
+      fullPath: '/technician/'
+      preLoaderRoute: typeof TechnicianIndexRouteImport
+      parentRoute: typeof TechnicianRouteRoute
+    }
+    '/technician/dashboard': {
+      id: '/technician/dashboard'
+      path: '/dashboard'
+      fullPath: '/technician/dashboard'
+      preLoaderRoute: typeof TechnicianDashboardRouteImport
+      parentRoute: typeof TechnicianRouteRoute
+    }
+    '/technician/jobs': {
+      id: '/technician/jobs'
+      path: '/jobs'
+      fullPath: '/technician/jobs'
+      preLoaderRoute: typeof TechnicianJobsRouteImport
+      parentRoute: typeof TechnicianRouteRoute
+    }
   }
 }
 
-interface AuthenticatedRouteRouteChildren {
-  AuthenticatedApprovalsRoute: typeof AuthenticatedApprovalsRoute
-  AuthenticatedBillingRoute: typeof AuthenticatedBillingRoute
-  AuthenticatedCustomersRoute: typeof AuthenticatedCustomersRoute
-  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedInventoryRoute: typeof AuthenticatedInventoryRoute
-  AuthenticatedPnlRoute: typeof AuthenticatedPnlRoute
-  AuthenticatedRepairsRoute: typeof AuthenticatedRepairsRoute
-  AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
-  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
-  AuthenticatedSuppliersRoute: typeof AuthenticatedSuppliersRoute
+interface AdminRouteRouteChildren {
+  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminIndexRoute: typeof AdminIndexRoute
 }
 
-const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedApprovalsRoute: AuthenticatedApprovalsRoute,
-  AuthenticatedBillingRoute: AuthenticatedBillingRoute,
-  AuthenticatedCustomersRoute: AuthenticatedCustomersRoute,
-  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedInventoryRoute: AuthenticatedInventoryRoute,
-  AuthenticatedPnlRoute: AuthenticatedPnlRoute,
-  AuthenticatedRepairsRoute: AuthenticatedRepairsRoute,
-  AuthenticatedReportsRoute: AuthenticatedReportsRoute,
-  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
-  AuthenticatedSuppliersRoute: AuthenticatedSuppliersRoute,
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminSettingsRoute: AdminSettingsRoute,
+  AdminIndexRoute: AdminIndexRoute,
 }
 
-const AuthenticatedRouteRouteWithChildren =
-  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
+
+interface CustomerRouteRouteChildren {
+  CustomerBookRoute: typeof CustomerBookRoute
+  CustomerDashboardRoute: typeof CustomerDashboardRoute
+  CustomerRepairsRoute: typeof CustomerRepairsRoute
+  CustomerIndexRoute: typeof CustomerIndexRoute
+}
+
+const CustomerRouteRouteChildren: CustomerRouteRouteChildren = {
+  CustomerBookRoute: CustomerBookRoute,
+  CustomerDashboardRoute: CustomerDashboardRoute,
+  CustomerRepairsRoute: CustomerRepairsRoute,
+  CustomerIndexRoute: CustomerIndexRoute,
+}
+
+const CustomerRouteRouteWithChildren = CustomerRouteRoute._addFileChildren(
+  CustomerRouteRouteChildren,
+)
+
+interface FinanceRouteRouteChildren {
+  FinanceBillingRoute: typeof FinanceBillingRoute
+  FinancePnlRoute: typeof FinancePnlRoute
+  FinanceIndexRoute: typeof FinanceIndexRoute
+}
+
+const FinanceRouteRouteChildren: FinanceRouteRouteChildren = {
+  FinanceBillingRoute: FinanceBillingRoute,
+  FinancePnlRoute: FinancePnlRoute,
+  FinanceIndexRoute: FinanceIndexRoute,
+}
+
+const FinanceRouteRouteWithChildren = FinanceRouteRoute._addFileChildren(
+  FinanceRouteRouteChildren,
+)
+
+interface InventoryRouteRouteChildren {
+  InventoryDashboardRoute: typeof InventoryDashboardRoute
+  InventorySuppliersRoute: typeof InventorySuppliersRoute
+  InventoryIndexRoute: typeof InventoryIndexRoute
+}
+
+const InventoryRouteRouteChildren: InventoryRouteRouteChildren = {
+  InventoryDashboardRoute: InventoryDashboardRoute,
+  InventorySuppliersRoute: InventorySuppliersRoute,
+  InventoryIndexRoute: InventoryIndexRoute,
+}
+
+const InventoryRouteRouteWithChildren = InventoryRouteRoute._addFileChildren(
+  InventoryRouteRouteChildren,
+)
+
+interface ManagementRouteRouteChildren {
+  ManagementDashboardRoute: typeof ManagementDashboardRoute
+  ManagementIndexRoute: typeof ManagementIndexRoute
+}
+
+const ManagementRouteRouteChildren: ManagementRouteRouteChildren = {
+  ManagementDashboardRoute: ManagementDashboardRoute,
+  ManagementIndexRoute: ManagementIndexRoute,
+}
+
+const ManagementRouteRouteWithChildren = ManagementRouteRoute._addFileChildren(
+  ManagementRouteRouteChildren,
+)
+
+interface ManagerRouteRouteChildren {
+  ManagerApprovalsRoute: typeof ManagerApprovalsRoute
+  ManagerReportsRoute: typeof ManagerReportsRoute
+  ManagerIndexRoute: typeof ManagerIndexRoute
+}
+
+const ManagerRouteRouteChildren: ManagerRouteRouteChildren = {
+  ManagerApprovalsRoute: ManagerApprovalsRoute,
+  ManagerReportsRoute: ManagerReportsRoute,
+  ManagerIndexRoute: ManagerIndexRoute,
+}
+
+const ManagerRouteRouteWithChildren = ManagerRouteRoute._addFileChildren(
+  ManagerRouteRouteChildren,
+)
+
+interface StaffRouteRouteChildren {
+  StaffCustomersRoute: typeof StaffCustomersRoute
+  StaffRepairsRoute: typeof StaffRepairsRoute
+}
+
+const StaffRouteRouteChildren: StaffRouteRouteChildren = {
+  StaffCustomersRoute: StaffCustomersRoute,
+  StaffRepairsRoute: StaffRepairsRoute,
+}
+
+const StaffRouteRouteWithChildren = StaffRouteRoute._addFileChildren(
+  StaffRouteRouteChildren,
+)
+
+interface TechnicianRouteRouteChildren {
+  TechnicianDashboardRoute: typeof TechnicianDashboardRoute
+  TechnicianJobsRoute: typeof TechnicianJobsRoute
+  TechnicianIndexRoute: typeof TechnicianIndexRoute
+}
+
+const TechnicianRouteRouteChildren: TechnicianRouteRouteChildren = {
+  TechnicianDashboardRoute: TechnicianDashboardRoute,
+  TechnicianJobsRoute: TechnicianJobsRoute,
+  TechnicianIndexRoute: TechnicianIndexRoute,
+}
+
+const TechnicianRouteRouteWithChildren = TechnicianRouteRoute._addFileChildren(
+  TechnicianRouteRouteChildren,
+)
 
 interface PublicRouteChildren {
   PublicAboutRoute: typeof PublicAboutRoute
@@ -439,7 +893,14 @@ const PublicRouteWithChildren =
   PublicRoute._addFileChildren(PublicRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
+  CustomerRouteRoute: CustomerRouteRouteWithChildren,
+  FinanceRouteRoute: FinanceRouteRouteWithChildren,
+  InventoryRouteRoute: InventoryRouteRouteWithChildren,
+  ManagementRouteRoute: ManagementRouteRouteWithChildren,
+  ManagerRouteRoute: ManagerRouteRouteWithChildren,
+  StaffRouteRoute: StaffRouteRouteWithChildren,
+  TechnicianRouteRoute: TechnicianRouteRouteWithChildren,
   PublicRoute: PublicRouteWithChildren,
   AuthRoute: AuthRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
