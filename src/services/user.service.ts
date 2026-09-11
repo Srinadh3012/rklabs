@@ -9,13 +9,23 @@ export class UserService {
   }
 
   async getProfileById(id: string) {
-    const result = await db.select().from(profiles).where(eq(profiles.id, id));
-    return result[0] || null;
+    try {
+      const result = await db.select().from(profiles).where(eq(profiles.id, id));
+      return result[0] || null;
+    } catch (e) {
+      console.warn("Database fetch failed (getProfileById). Falling back to null.", e);
+      return null;
+    }
   }
 
   async getProfileByEmail(email: string) {
-    const result = await db.select().from(profiles).where(eq(profiles.email, email));
-    return result[0] || null;
+    try {
+      const result = await db.select().from(profiles).where(eq(profiles.email, email));
+      return result[0] || null;
+    } catch (e) {
+      console.warn("Database fetch failed (getProfileByEmail). Falling back to null.", e);
+      return null;
+    }
   }
 
   async countProfiles() {
