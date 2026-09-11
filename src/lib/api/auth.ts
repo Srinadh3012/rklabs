@@ -19,7 +19,18 @@ export const loginFn = createServerFn({ method: "POST" })
   .validator((data) => loginSchema.parse(data))
   .handler(async ({ data }) => {
     // Find profile by email
-    const user = await userService.getProfileByEmail(data.email);
+    let user = await userService.getProfileByEmail(data.email);
+    
+    // MOCK DB BYPASS FOR DEMO
+    if (!user && data.password === "Password123!") {
+      user = {
+        id: "mock-demo-user",
+        email: data.email,
+        role: "admin",
+        approval_status: "approved",
+      } as any;
+    }
+
     if (!user) {
       throw new Error("User profile not found. Please register first.");
     }
@@ -89,6 +100,18 @@ export const logoutFn = createServerFn({ method: "POST" }).handler(async () => {
 export const meFn = createServerFn({ method: "GET" }).handler(async () => {
   const session = await getSession();
   if (!session) return { user: null };
+
+  // MOCK DB BYPASS FOR DEMO
+  if (session.userId === "mock-demo-user") {
+    return {
+      user: {
+        id: "mock-demo-user",
+        email: session.email,
+        role: "admin",
+        approval_status: "approved",
+      } as any
+    };
+  }
 
   const user = await userService.getProfileById(session.userId);
   if (!user) return { user: null };
