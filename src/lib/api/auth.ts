@@ -24,9 +24,9 @@ export const loginFn = createServerFn({ method: "POST" })
       throw new Error("User profile not found. Please register first.");
     }
 
-    // Mock password check: in this prototype, we expect "Password123!"
+    // Mock password check — in development, accept "Password123!" or any password
     // In production, this will be replaced with real auth
-    if (data.password !== "Password123!") {
+    if (data.password !== "Password123!" && process.env.NODE_ENV === "production") {
       throw new Error("Invalid credentials");
     }
 

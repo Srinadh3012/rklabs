@@ -58,18 +58,10 @@ function AuthPage() {
     e.preventDefault();
     setBusy(true);
     try {
-      const result = await loginFn({ data: { email, password } });
+      await loginFn({ data: { email, password } });
       setBusy(false);
       toast.success("Welcome back");
-      
-      const role = result.user?.role || "user";
-      if (role === "admin") {
-        window.location.href = "/admin";
-      } else if (role === "employee" || role === "technician") {
-        window.location.href = "/technician/dashboard";
-      } else {
-        window.location.href = "/customer/dashboard";
-      }
+      window.location.href = "/dashboard";
     } catch (error: any) {
       setBusy(false);
       return toast.error(error.message || "Invalid credentials");
@@ -186,6 +178,7 @@ function AuthPage() {
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      tabIndex={-1}
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -263,6 +256,7 @@ function AuthPage() {
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      tabIndex={-1}
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
