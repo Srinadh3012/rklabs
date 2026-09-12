@@ -172,21 +172,16 @@ function AuthPage() {
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pr-10"
+                      className=""
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                      tabIndex={-1}
-                    >
-                      {showPassword ? (
-                        <span className="text-xs font-bold text-[var(--neon)]">Hide</span>
-                      ) : (
-                        <span className="text-xs font-bold text-muted-foreground">Show</span>
-                      )}
-                    </button>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="mt-2 w-full rounded border border-red-500 bg-red-500/20 py-1 text-sm font-bold text-red-200 hover:bg-red-500/40"
+                  >
+                    {showPassword ? "Hide Password" : "Show Password (Click Me)"}
+                  </button>
                 </div>
                 <Button
                   type="submit"
@@ -254,21 +249,16 @@ function AuthPage() {
                       minLength={8}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pr-10"
+                      className=""
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                      tabIndex={-1}
-                    >
-                      {showPassword ? (
-                        <span className="text-xs font-bold text-[var(--neon)]">Hide</span>
-                      ) : (
-                        <span className="text-xs font-bold text-muted-foreground">Show</span>
-                      )}
-                    </button>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="mt-2 w-full rounded border border-red-500 bg-red-500/20 py-1 text-sm font-bold text-red-200 hover:bg-red-500/40"
+                  >
+                    {showPassword ? "Hide Password" : "Show Password (Click Me)"}
+                  </button>
                 </div>
                 <Button
                   type="submit"
