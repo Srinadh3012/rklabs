@@ -23,12 +23,13 @@ export const loginFn = createServerFn({ method: "POST" })
     
     // MOCK DB BYPASS FOR DEMO
     if (!user && data.password === "Password123!") {
-      user = {
-        id: "mock-demo-user",
+      user = await userService.createProfile({
         email: data.email,
-        role: "admin",
+        full_name: "Demo Admin",
+        requested_role: "admin",
         approval_status: "approved",
-      } as any;
+        role: "admin",
+      }) as any;
     }
 
     if (!user) {
