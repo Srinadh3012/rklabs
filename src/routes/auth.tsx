@@ -164,7 +164,7 @@ function AuthPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="pw">Password</Label>
+                  <Label htmlFor="pw">Your Password</Label>
                   <div className="relative">
                     <Input
                       id="pw"
@@ -240,7 +240,7 @@ function AuthPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="pw2">Password</Label>
+                  <Label htmlFor="pw2">Your Password</Label>
                   <div className="relative">
                     <Input
                       id="pw2"
