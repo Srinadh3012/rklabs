@@ -172,16 +172,16 @@ function AuthPage() {
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className=""
+                      className="pr-10"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="mt-2 w-full rounded border border-red-500 bg-red-500/20 py-1 text-sm font-bold text-red-200 hover:bg-red-500/40"
-                  >
-                    {showPassword ? "Hide Password" : "Show Password (Click Me)"}
-                  </button>
                 </div>
                 <Button
                   type="submit"
@@ -249,16 +249,16 @@ function AuthPage() {
                       minLength={8}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className=""
+                      className="pr-10"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="mt-2 w-full rounded border border-red-500 bg-red-500/20 py-1 text-sm font-bold text-red-200 hover:bg-red-500/40"
-                  >
-                    {showPassword ? "Hide Password" : "Show Password (Click Me)"}
-                  </button>
                 </div>
                 <Button
                   type="submit"
