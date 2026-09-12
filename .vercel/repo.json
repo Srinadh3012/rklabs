@@ -1,0 +1,11 @@
+{
+  "remoteName": "origin",
+  "projects": [
+    {
+      "id": "prj_h2HTWHSV7PM03ZRwjGlZOn0QRrHv",
+      "name": "rklabs-inventory-mgmt",
+      "directory": ".",
+      "orgId": "team_x3oZmWr9iI6XodLPGP7Oa4zh"
+    }
+  ]
+}
