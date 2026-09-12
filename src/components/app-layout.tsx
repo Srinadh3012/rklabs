@@ -94,7 +94,7 @@ function NavLinks({ onClick, collapsed }: { onClick?: () => void; collapsed?: bo
 function SidebarBrand({ collapsed }: { collapsed?: boolean }) {
   return (
     <Link
-      to="/dashboard"
+      to="/admin"
       className={cn(
         "flex items-center border-b border-white/5 py-5",
         collapsed ? "justify-center px-2" : "gap-3 px-5",
