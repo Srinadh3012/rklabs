@@ -58,10 +58,13 @@ function AuthPage() {
     e.preventDefault();
     setBusy(true);
     try {
-      await loginFn({ data: { email, password } });
+      const res = await loginFn({ data: { email, password } });
       setBusy(false);
       toast.success("Welcome back");
-      window.location.href = "/dashboard";
+      const r = res.user?.role;
+      if (r === "admin" || r === "manager") window.location.href = "/admin";
+      else if (r === "employee" || r === "staff" || r === "technician") window.location.href = "/staff";
+      else window.location.href = "/customer";
     } catch (error: any) {
       setBusy(false);
       return toast.error(error.message || "Invalid credentials");
@@ -77,7 +80,7 @@ function AuthPage() {
       if (res.status === "approved") {
         persistStatus(null);
         toast.success("Shop admin account created");
-        window.location.href = "/dashboard";
+        window.location.href = "/admin";
         return;
       }
       persistStatus({ email, status: "pending", at: new Date().toISOString() });
