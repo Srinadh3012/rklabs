@@ -180,7 +180,11 @@ function AuthPage() {
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                       tabIndex={-1}
                     >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showPassword ? (
+                        <span className="text-xs font-bold text-[var(--neon)]">Hide</span>
+                      ) : (
+                        <span className="text-xs font-bold text-muted-foreground">Show</span>
+                      )}
                     </button>
                   </div>
                 </div>
@@ -258,7 +262,11 @@ function AuthPage() {
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                       tabIndex={-1}
                     >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showPassword ? (
+                        <span className="text-xs font-bold text-[var(--neon)]">Hide</span>
+                      ) : (
+                        <span className="text-xs font-bold text-muted-foreground">Show</span>
+                      )}
                     </button>
                   </div>
                 </div>
