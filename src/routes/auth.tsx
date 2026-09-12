@@ -46,7 +46,12 @@ function AuthPage() {
     } catch {}
   }, []);
 
-  if (!loading && user) return <Navigate to="/dashboard" replace />;
+  if (!loading && user) {
+    const r = user.role;
+    if (r === "admin" || r === "manager") return <Navigate to="/admin" replace />;
+    if (r === "employee" || r === "staff" || r === "technician") return <Navigate to="/staff" replace />;
+    return <Navigate to="/customer" replace />;
+  }
 
   function persistStatus(next: StoredStatus | null) {
     setStored(next);
