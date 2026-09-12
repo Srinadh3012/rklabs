@@ -11,14 +11,20 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PublicRouteImport } from './routes/_public'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
+import { Route as ApprovalsRouteImport } from './routes/approvals'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as BillingRouteImport } from './routes/billing'
 import { Route as CustomerRouteRouteImport } from './routes/customer/route'
 import { Route as FinanceRouteRouteImport } from './routes/finance/route'
 import { Route as InventoryRouteRouteImport } from './routes/inventory/route'
 import { Route as ManagementRouteRouteImport } from './routes/management/route'
 import { Route as ManagerRouteRouteImport } from './routes/manager/route'
+import { Route as PnlRouteImport } from './routes/pnl'
+import { Route as ReportsRouteImport } from './routes/reports'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as StaffRouteRouteImport } from './routes/staff/route'
+import { Route as SuppliersRouteImport } from './routes/suppliers'
 import { Route as TechnicianRouteRouteImport } from './routes/technician/route'
 import { Route as PublicIndexRouteImport } from './routes/_public.index'
 import { Route as PublicAboutRouteImport } from './routes/_public.about'
@@ -57,9 +63,19 @@ const AdminRouteRoute = AdminRouteRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApprovalsRoute = ApprovalsRouteImport.update({
+  id: '/approvals',
+  path: '/approvals',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BillingRoute = BillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CustomerRouteRoute = CustomerRouteRouteImport.update({
@@ -87,6 +103,21 @@ const ManagerRouteRoute = ManagerRouteRouteImport.update({
   path: '/manager',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PnlRoute = PnlRouteImport.update({
+  id: '/pnl',
+  path: '/pnl',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportsRoute = ReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -95,6 +126,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const StaffRouteRoute = StaffRouteRouteImport.update({
   id: '/staff',
   path: '/staff',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuppliersRoute = SuppliersRouteImport.update({
+  id: '/suppliers',
+  path: '/suppliers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TechnicianRouteRoute = TechnicianRouteRouteImport.update({
@@ -248,8 +284,14 @@ export interface FileRoutesByFullPath {
   '/staff': typeof StaffRouteRouteWithChildren
   '/technician': typeof TechnicianRouteRouteWithChildren
   '/': typeof PublicIndexRoute
+  '/approvals': typeof ApprovalsRoute
   '/auth': typeof AuthRoute
+  '/billing': typeof BillingRoute
+  '/pnl': typeof PnlRoute
+  '/reports': typeof ReportsRoute
+  '/settings': typeof SettingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/suppliers': typeof SuppliersRoute
   '/about': typeof PublicAboutRoute
   '/contact': typeof PublicContactRoute
   '/services': typeof PublicServicesRoute
@@ -279,8 +321,14 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/staff': typeof StaffRouteRouteWithChildren
+  '/approvals': typeof ApprovalsRoute
   '/auth': typeof AuthRoute
+  '/billing': typeof BillingRoute
+  '/pnl': typeof PnlRoute
+  '/reports': typeof ReportsRoute
+  '/settings': typeof SettingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/suppliers': typeof SuppliersRoute
   '/about': typeof PublicAboutRoute
   '/contact': typeof PublicContactRoute
   '/services': typeof PublicServicesRoute
@@ -320,8 +368,14 @@ export interface FileRoutesById {
   '/staff': typeof StaffRouteRouteWithChildren
   '/technician': typeof TechnicianRouteRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
+  '/approvals': typeof ApprovalsRoute
   '/auth': typeof AuthRoute
+  '/billing': typeof BillingRoute
+  '/pnl': typeof PnlRoute
+  '/reports': typeof ReportsRoute
+  '/settings': typeof SettingsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/suppliers': typeof SuppliersRoute
   '/_public/about': typeof PublicAboutRoute
   '/_public/contact': typeof PublicContactRoute
   '/_public/services': typeof PublicServicesRoute
@@ -362,8 +416,14 @@ export interface FileRouteTypes {
     | '/staff'
     | '/technician'
     | '/'
+    | '/approvals'
     | '/auth'
+    | '/billing'
+    | '/pnl'
+    | '/reports'
+    | '/settings'
     | '/sitemap.xml'
+    | '/suppliers'
     | '/about'
     | '/contact'
     | '/services'
@@ -393,8 +453,14 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/staff'
+    | '/approvals'
     | '/auth'
+    | '/billing'
+    | '/pnl'
+    | '/reports'
+    | '/settings'
     | '/sitemap.xml'
+    | '/suppliers'
     | '/about'
     | '/contact'
     | '/services'
@@ -433,8 +499,14 @@ export interface FileRouteTypes {
     | '/staff'
     | '/technician'
     | '/_public'
+    | '/approvals'
     | '/auth'
+    | '/billing'
+    | '/pnl'
+    | '/reports'
+    | '/settings'
     | '/sitemap.xml'
+    | '/suppliers'
     | '/_public/about'
     | '/_public/contact'
     | '/_public/services'
@@ -474,8 +546,14 @@ export interface RootRouteChildren {
   StaffRouteRoute: typeof StaffRouteRouteWithChildren
   TechnicianRouteRoute: typeof TechnicianRouteRouteWithChildren
   PublicRoute: typeof PublicRouteWithChildren
+  ApprovalsRoute: typeof ApprovalsRoute
   AuthRoute: typeof AuthRoute
+  BillingRoute: typeof BillingRoute
+  PnlRoute: typeof PnlRoute
+  ReportsRoute: typeof ReportsRoute
+  SettingsRoute: typeof SettingsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  SuppliersRoute: typeof SuppliersRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -494,11 +572,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/approvals': {
+      id: '/approvals'
+      path: '/approvals'
+      fullPath: '/approvals'
+      preLoaderRoute: typeof ApprovalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/billing': {
+      id: '/billing'
+      path: '/billing'
+      fullPath: '/billing'
+      preLoaderRoute: typeof BillingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/customer': {
@@ -536,6 +628,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManagerRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pnl': {
+      id: '/pnl'
+      path: '/pnl'
+      fullPath: '/pnl'
+      preLoaderRoute: typeof PnlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reports': {
+      id: '/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -548,6 +661,13 @@ declare module '@tanstack/react-router' {
       path: '/staff'
       fullPath: '/staff'
       preLoaderRoute: typeof StaffRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/suppliers': {
+      id: '/suppliers'
+      path: '/suppliers'
+      fullPath: '/suppliers'
+      preLoaderRoute: typeof SuppliersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/technician': {
@@ -902,8 +1022,14 @@ const rootRouteChildren: RootRouteChildren = {
   StaffRouteRoute: StaffRouteRouteWithChildren,
   TechnicianRouteRoute: TechnicianRouteRouteWithChildren,
   PublicRoute: PublicRouteWithChildren,
+  ApprovalsRoute: ApprovalsRoute,
   AuthRoute: AuthRoute,
+  BillingRoute: BillingRoute,
+  PnlRoute: PnlRoute,
+  ReportsRoute: ReportsRoute,
+  SettingsRoute: SettingsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  SuppliersRoute: SuppliersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
