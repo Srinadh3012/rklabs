@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { MessageCircle, X, Copy } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -146,7 +147,7 @@ export function WaSenderProvider({ children }: { children: ReactNode }) {
         <DialogContent className="glass-strong max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <MessageCircle className="h-5 w-5 text-[var(--neon)]" />
+              <WhatsAppIcon className="h-5 w-5 text-[var(--neon)]" />
               {req?.title ?? "Preview WhatsApp message"}
             </DialogTitle>
           </DialogHeader>
@@ -196,7 +197,7 @@ export function WaSenderProvider({ children }: { children: ReactNode }) {
               disabled={!req?.phone}
               style={{ background: "var(--gradient-primary)", color: "oklch(0.12 0.02 250)" }}
             >
-              <MessageCircle className="mr-2 h-4 w-4" /> Open WhatsApp
+              <WhatsAppIcon className="mr-2 h-4 w-4" /> Open WhatsApp
             </Button>
           </DialogFooter>
         </DialogContent>

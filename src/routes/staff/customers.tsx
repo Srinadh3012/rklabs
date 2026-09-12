@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Search, Trash2, Edit, MessageCircle, Phone } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -226,7 +227,7 @@ function CustomersPage() {
                           rel="noreferrer"
                           className="inline-flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 hover:underline"
                         >
-                          <MessageCircle className="h-3 w-3" /> WhatsApp
+                          <WhatsAppIcon className="h-3 w-3" /> WhatsApp
                         </a>
                       )}
                     </div>

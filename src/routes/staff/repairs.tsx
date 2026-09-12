@@ -983,7 +983,7 @@ function RepairsPage() {
                               })
                             }
                           >
-                            <MessageCircle className="h-4 w-4" />
+                            <WhatsAppIcon className="h-4 w-4" />
                           </Button>
                         )}
                         <Button

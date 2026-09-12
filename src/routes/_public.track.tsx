@@ -199,7 +199,7 @@ function ResultView({ data }: { data: Extract<TrackResult, { found: true }> }) {
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 text-[var(--neon)] hover:underline"
               >
-                <MessageCircle className="h-4 w-4" /> {customer.whatsapp}
+                <WhatsAppIcon className="h-4 w-4" /> {customer.whatsapp}
               </a>
             )}
             {customer.email && (
