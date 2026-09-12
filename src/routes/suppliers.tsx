@@ -15,6 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { AppLayout } from "@/components/app-layout";
 import {
   getSuppliersFn,
   createSupplierFn,
@@ -113,8 +114,9 @@ function SuppliersPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-6">
+    <AppLayout>
+      <div className="mx-auto max-w-7xl space-y-6">
+        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-6">
         <div className="space-y-1.5">
           <h1 className="text-3xl font-bold tracking-tight">Suppliers</h1>
           <p className="text-sm text-slate-400">Manage vendors and parts suppliers</p>
@@ -283,7 +285,8 @@ function SuppliersPage() {
           </table>
         </div>
       </div>
-    </div>
+      </div>
+    </AppLayout>
   );
 }
 

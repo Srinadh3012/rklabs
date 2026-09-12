@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Check, X, Shield, Clock } from "lucide-react";
 
+import { AppLayout } from "@/components/app-layout";
 import { getApprovalsFn, decideApprovalFn, changeRoleFn } from "@/lib/api/approvals";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -37,8 +38,9 @@ function ApprovalsPage() {
   const others = users.filter((u) => u.approval_status !== "pending" && u.approval_status);
 
   return (
-    <div className="mx-auto max-w-7xl space-y-8">
-      <header className="border-b border-white/10 pb-6">
+    <AppLayout>
+      <div className="mx-auto max-w-7xl space-y-8">
+        <header className="border-b border-white/10 pb-6">
         <h1 className="text-3xl font-bold tracking-tight">Access Approvals</h1>
         <p className="mt-1.5 text-sm text-slate-400">Manage user access and roles</p>
       </header>
@@ -145,6 +147,7 @@ function ApprovalsPage() {
           </div>
         </div>
       </section>
-    </div>
+      </div>
+    </AppLayout>
   );
 }

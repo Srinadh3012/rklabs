@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Settings, Save, Store, Link, FileText, BadgePercent } from "lucide-react";
 
+import { AppLayout } from "@/components/app-layout";
 import { getProfileFn, updateProfileFn } from "@/lib/api/settings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -65,12 +66,17 @@ function SettingsPage() {
   }
 
   if (isLoading) {
-    return <div className="p-8 text-center text-slate-500">Loading settings...</div>;
+    return (
+      <AppLayout>
+        <div className="p-8 text-center text-slate-500">Loading settings...</div>
+      </AppLayout>
+    );
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8">
-      <header className="border-b border-white/10 pb-6">
+    <AppLayout>
+      <div className="mx-auto max-w-4xl space-y-8">
+        <header className="border-b border-white/10 pb-6">
         <h1 className="text-3xl font-bold tracking-tight">Shop Settings</h1>
         <p className="mt-1.5 text-sm text-slate-400">Configure your business profile and preferences</p>
       </header>
@@ -196,6 +202,7 @@ function SettingsPage() {
           </Button>
         </div>
       </form>
-    </div>
+      </div>
+    </AppLayout>
   );
 }

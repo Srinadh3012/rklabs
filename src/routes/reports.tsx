@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { BarChart3, TrendingUp, Users, Calendar } from "lucide-react";
 import { format, subDays, startOfMonth, startOfYear } from "date-fns";
 
+import { AppLayout } from "@/components/app-layout";
 import { getReportsDataFn } from "@/lib/api/reports";
 import { inr } from "@/lib/format";
 
@@ -45,8 +46,9 @@ function ReportsPage() {
   const newCustomers = data?.customers.length || 0; // simplistic metric
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-6">
+    <AppLayout>
+      <div className="mx-auto max-w-7xl space-y-6">
+        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-6">
         <div className="space-y-1.5">
           <h1 className="text-3xl font-bold tracking-tight">Reports</h1>
           <p className="text-sm text-slate-400">Business performance metrics</p>
@@ -165,7 +167,8 @@ function ReportsPage() {
           </div>
         </>
       )}
-    </div>
+      </div>
+    </AppLayout>
   );
 }
 
