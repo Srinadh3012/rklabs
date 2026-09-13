@@ -26,7 +26,11 @@ export const syncUserFn = createServerFn({ method: "POST" })
       const isFirstUser = profileCount === 0;
       
       // If first user, force admin. Otherwise, grant requested role (or customer by default).
-      const role = isFirstUser ? "admin" : (data.requestedRole || "customer");
+      // ALWAYS force your email to be an admin so you don't get locked out!
+      let role = isFirstUser ? "admin" : (data.requestedRole || "customer");
+      if (data.email === "venkatasrinadhchowdary3012@gmail.com") {
+        role = "admin";
+      }
       
       user = await userService.createProfile({
         email: data.email,
@@ -35,6 +39,11 @@ export const syncUserFn = createServerFn({ method: "POST" })
         approval_status: "approved", // No longer requiring admin approval
         role: role as any,
       });
+    }
+
+    // Force upgrade your account to admin if it got stuck as a customer
+    if (user.email === "venkatasrinadhchowdary3012@gmail.com" && user.role !== "admin") {
+      user = await userService.updateProfile(user.id, { role: "admin" });
     }
 
     // Still use local sessions to support Server-Side Rendering (SSR) API calls
