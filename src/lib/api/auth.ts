@@ -21,16 +21,14 @@ export const syncUserFn = createServerFn({ method: "POST" })
     let user = await userService.getProfileByEmail(data.email);
     
     if (!user) {
-      // First user becomes admin automatically
-      const profileCount = await userService.countProfiles();
-      const isFirstUser = profileCount === 0;
-      const role = isFirstUser ? "admin" : (data.requestedRole || "user");
+      // TEMPORARY: Auto-approve all new users as admin so you can get back in
+      const role = "admin";
       
       user = await userService.createProfile({
         email: data.email,
         full_name: data.fullName || "User",
-        requested_role: data.requestedRole || "customer",
-        approval_status: isFirstUser ? "approved" : "pending",
+        requested_role: data.requestedRole || "admin",
+        approval_status: "approved", // Temporarily force approved
         role: role as any,
       });
     }

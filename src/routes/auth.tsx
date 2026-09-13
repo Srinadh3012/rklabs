@@ -218,11 +218,6 @@ function AuthPage() {
                 >
                   {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Sign in
                 </Button>
-                {process.env.NODE_ENV !== "production" && (
-                  <p className="text-xs text-center text-muted-foreground mt-2">
-                    Mock DB: any email, pass: Password123!
-                  </p>
-                )}
               </form>
             </TabsContent>
 
