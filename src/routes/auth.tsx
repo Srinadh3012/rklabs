@@ -101,14 +101,17 @@ function AuthPage() {
       });
 
       setBusy(false);
-      if (res.user.approval_status === "approved") {
-        persistStatus(null);
-        toast.success("Shop admin account created");
+      persistStatus(null);
+      if (res.user.role === "admin" || res.user.role === "manager") {
+        toast.success("Account created successfully");
         window.location.href = "/admin";
-        return;
+      } else if (res.user.role === "employee" || res.user.role === "technician") {
+        toast.success("Account created successfully");
+        window.location.href = "/staff";
+      } else {
+        toast.success("Account created successfully");
+        window.location.href = "/customer";
       }
-      persistStatus({ email, status: "pending", at: new Date().toISOString() });
-      toast.success("Account created — waiting for admin approval");
     } catch (error: any) {
       setBusy(false);
       return toast.error(error.message || "Failed to create account");
