@@ -61,6 +61,9 @@ export function TechnicianLayout({ children }: { children: ReactNode }) {
   const { theme, toggle } = useTheme();
 
   async function signOut() {
+    const { signOut: firebaseSignOut } = await import("firebase/auth");
+    const { auth } = await import("@/lib/firebase");
+    await firebaseSignOut(auth);
     await logoutFn();
     navigate({ to: "/auth", replace: true });
   }

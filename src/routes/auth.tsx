@@ -3,13 +3,15 @@ import { createFileRoute, useNavigate, Link, Navigate } from "@tanstack/react-ro
 import { motion } from "framer-motion";
 import { Wrench, Loader2, Clock, XCircle, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { loginFn, registerFn } from "@/lib/api/auth";
+import { syncUserFn } from "@/lib/api/auth";
 
 type StoredStatus = { email: string; status: "pending" | "rejected"; reason?: string; at: string };
 const STATUS_KEY = "rk_signup_status";
@@ -48,9 +50,14 @@ function AuthPage() {
 
   if (!loading && user) {
     const r = user.role;
-    if (r === "admin" || r === "manager") return <Navigate to="/admin" replace />;
-    if (r === "employee" || r === "staff" || r === "technician") return <Navigate to="/staff" replace />;
-    return <Navigate to="/customer" replace />;
+    if (user.approval_status !== "approved") {
+      // Allow them to see the waiting state
+      // but in Firebase they are logged in. We can show a pending message.
+    } else {
+      if (r === "admin" || r === "manager") return <Navigate to="/admin" replace />;
+      if (r === "employee" || r === "staff" || r === "technician") return <Navigate to="/staff" replace />;
+      return <Navigate to="/customer" replace />;
+    }
   }
 
   function persistStatus(next: StoredStatus | null) {
@@ -63,13 +70,13 @@ function AuthPage() {
     e.preventDefault();
     setBusy(true);
     try {
-      const res = await loginFn({ data: { email, password } });
-      setBusy(false);
+      // Firebase authentication
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      // Wait for the onAuthStateChanged hook to update user state and redirect
+      // But we can also proactively sync to ensure session is created for SSR
+      await syncUserFn({ data: { email: userCredential.user.email!, uid: userCredential.user.uid } });
       toast.success("Welcome back");
-      const r = res.user?.role;
-      if (r === "admin" || r === "manager") window.location.href = "/admin";
-      else if (r === "employee" || r === "staff" || r === "technician") window.location.href = "/staff";
-      else window.location.href = "/customer";
+      setBusy(false);
     } catch (error: any) {
       setBusy(false);
       return toast.error(error.message || "Invalid credentials");
@@ -80,9 +87,21 @@ function AuthPage() {
     e.preventDefault();
     setBusy(true);
     try {
-      const res = await registerFn({ data: { email, password, fullName, requestedRole } });
+      // Firebase user creation
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      
+      // Sync to local DB with requested role
+      const res = await syncUserFn({ 
+        data: { 
+          email: userCredential.user.email!, 
+          uid: userCredential.user.uid,
+          fullName,
+          requestedRole
+        } 
+      });
+
       setBusy(false);
-      if (res.status === "approved") {
+      if (res.user.approval_status === "approved") {
         persistStatus(null);
         toast.success("Shop admin account created");
         window.location.href = "/admin";

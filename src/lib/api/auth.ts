@@ -15,48 +15,36 @@ const registerSchema = z.object({
   requestedRole: z.enum(["customer", "employee", "admin"]).default("customer"),
 });
 
-export const loginFn = createServerFn({ method: "POST" })
-  .validator((data) => loginSchema.parse(data))
+export const syncUserFn = createServerFn({ method: "POST" })
+  .validator((data: { email: string; uid: string; fullName?: string; requestedRole?: string }) => data)
   .handler(async ({ data }) => {
-    // Find profile by email
     let user = await userService.getProfileByEmail(data.email);
     
-    // MOCK DB BYPASS FOR DEMO
-    if (!user && data.password === "Password123!") {
+    if (!user) {
+      // First user becomes admin automatically
+      const profileCount = await userService.countProfiles();
+      const isFirstUser = profileCount === 0;
+      const role = isFirstUser ? "admin" : (data.requestedRole || "user");
+      
       user = await userService.createProfile({
         email: data.email,
-        full_name: "Demo Admin",
-        requested_role: "admin",
-        approval_status: "approved",
-        role: "admin",
-      }) as any;
+        full_name: data.fullName || "User",
+        requested_role: data.requestedRole || "customer",
+        approval_status: isFirstUser ? "approved" : "pending",
+        role: role as any,
+      });
     }
 
-    if (!user) {
-      throw new Error("User profile not found. Please register first.");
+    // Still use local sessions to support Server-Side Rendering (SSR) API calls
+    if (user.approval_status === "approved") {
+      await createSession({
+        userId: user.id,
+        email: user.email,
+        role: user.role || "user",
+      });
     }
 
-    // Mock password check — in development, accept "Password123!" or any password
-    // In production, this will be replaced with real auth
-    if (data.password !== "Password123!" && process.env.NODE_ENV === "production") {
-      throw new Error("Invalid credentials");
-    }
-
-    if (user.approval_status !== "approved") {
-      throw new Error(
-        user.approval_status === "pending"
-          ? "Your account is pending admin approval."
-          : "Your account was not approved. Please contact the shop admin.",
-      );
-    }
-
-    await createSession({
-      userId: user.id,
-      email: user.email,
-      role: user.role || "user",
-    });
-
-    return { success: true, user: { id: user.id, email: user.email, role: user.role } };
+    return { success: true, user: { id: user.id, email: user.email, role: user.role, approval_status: user.approval_status } };
   });
 
 export const registerFn = createServerFn({ method: "POST" })
