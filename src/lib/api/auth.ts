@@ -42,7 +42,10 @@ export const syncUserFn = createServerFn({ method: "POST" })
     }
 
     // Force upgrade your account to admin if it got stuck as a customer
-    if (user.email === "venkatasrinadhchowdary3012@gmail.com" && user.role !== "admin") {
+    if (
+      (user.email === "venkatasrinadhchowdary3012@gmail.com" || user.email === "admin@rklabs.com") 
+      && user.role !== "admin"
+    ) {
       user = await userService.updateProfile(user.id, { role: "admin" });
     }
 
