@@ -74,9 +74,14 @@ function AuthPage() {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       // Wait for the onAuthStateChanged hook to update user state and redirect
       // But we can also proactively sync to ensure session is created for SSR
-      await syncUserFn({ data: { email: userCredential.user.email!, uid: userCredential.user.uid } });
+      const res = await syncUserFn({ data: { email: userCredential.user.email!, uid: userCredential.user.uid } });
       toast.success("Welcome back");
       setBusy(false);
+      
+      const r = res.user.role;
+      if (r === "admin" || r === "manager") window.location.href = "/admin";
+      else if (r === "employee" || r === "staff" || r === "technician") window.location.href = "/staff";
+      else window.location.href = "/customer";
     } catch (error: any) {
       setBusy(false);
       return toast.error(error.message || "Invalid credentials");
